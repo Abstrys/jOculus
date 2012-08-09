@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Antiword" default="build" basedir=".">
+   <description>Build Antiword</description>
+
+   <!-- set global properties for this build -->
+   <property name="src" location="src"/>
+   <property name="build" location="build"/>
+   <property name="dist"  location="dist"/>
+
+   <target name="init">
+      <tstamp/> <!-- Create the time stamp -->
+      <echo>${ant.project.name} build ${DSTAMP}${TSTAMP}</echo>
+   </target>
+
+   <!-- Build all -->
+   <target name="all" depends="build" description="Build all"/>
+
+   <!-- Build pwgen, the command-line application -->
+   <target name="build" depends="init" description="Build ${ant.project.name}">
+      <mkdir dir="${build}/"/>
+      <javac srcdir="${src}" destdir="${build}" includeantruntime="false"/>
+      <mkdir dir="${dist}/"/>
+      <jar jarfile="${dist}/${ant.project.name}.jar" index="true" indexMetaInf="true" basedir="${build}">
+         <manifest>
+            <attribute name="Built-By" value="${user.name}"/>
+            <attribute name="Main-Class" value="abstrys.antiword.AntiWord"/>
+            <attribute name="Sealed" value="true"/>
+         </manifest>
+      </jar>
+   </target>
+
+   <target name="clean" description="clean up the build" >
+      <delete dir="${build}"/>
+   </target>
+
+   <target name="spotless" depends="clean" description="clean everything, including the dist directory">
+      <delete dir="${dist}"/>
+   </target>
+</project>
