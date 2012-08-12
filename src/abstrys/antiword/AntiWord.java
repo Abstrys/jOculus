@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.TimerTask;
 import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
 
 public class AntiWord extends JFrame
 {
@@ -12,6 +14,8 @@ public class AntiWord extends JFrame
     String cur_filepath = null;
     File cur_file = null;
     HTMLPanel html_panel = null;
+    ActionPanel action_panel = null;
+    FileModificationMonitor file_monitor = null;
 
     public AntiWord()
     {
@@ -21,22 +25,31 @@ public class AntiWord extends JFrame
    {
       parseArgs(args);
 
+      boolean file_loaded = false;
+      boolean file_specified = false;
       if(cur_filepath != null)
       {
-         // check to see if the file exists.
-         cur_file = new File(cur_filepath);
-         if(!cur_file.exists())
-         {
-            JOptionPane.showMessageDialog(null, "A filename was specified, but does not exist!");
-            System.exit(1);
-         }
+         file_loaded = this.setFile(cur_filepath);
+         file_specified = true;
       }
 
-      html_panel = new HTMLPanel();
+      // the file was specified, but it could not be loaded. The user has been notified (in the setFile method).
+      if(file_specified && !file_loaded)
+      {
+         return false;
+      }
+
       // Set up the application frame.
       app_frame = new JFrame(Strings.APPNAME);
-//      app_frame.getContentPane().add(html_panel);
-      app_frame.getContentPane().add(html_panel);
+      html_panel = new HTMLPanel();
+      action_panel = new ActionPanel();
+
+      Container cp = app_frame.getContentPane();
+      cp.setLayout(new BorderLayout());
+
+      cp.add(html_panel, BorderLayout.CENTER);
+      cp.add(action_panel, BorderLayout.SOUTH);
+
       app_frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
       app_frame.pack();
       app_frame.setVisible(true);
@@ -85,6 +98,31 @@ public class AntiWord extends JFrame
       }
 
       return sb.toString();
+   }
+
+   protected boolean setFile(String fpath)
+   {
+       if(fpath != null)
+       {
+           cur_filepath = fpath;
+       }
+       
+      // check to see if the file exists.
+      cur_file = new File(cur_filepath);
+      if(!cur_file.exists())
+      {
+         JOptionPane.showMessageDialog(null, "A filename was specified, but does not exist!");
+         return false;
+      }
+
+      // excellent. Set up a file notification monitor.
+      if(file_monitor != null)
+      {
+      }
+
+      file_monitor = new AntiWord.FileModificationMonitor(cur_file);
+
+      return true;
    }
 
    public static void main(String args[])
@@ -137,6 +175,7 @@ public class AntiWord extends JFrame
       protected void notifyChange(File file)
       {
          // reload the document.
+         
          JOptionPane.showMessageDialog(null, "The document has changed!");
       }
    }
