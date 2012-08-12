@@ -1,21 +1,24 @@
 package abstrys.antiword;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.TimerTask;
+import java.util.Timer;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Container;
 
-public class AntiWord extends JFrame
+public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsFile
 {
     JFrame app_frame = null;
     String cur_filepath = null;
     File cur_file = null;
+    boolean file_is_html = false;
+    String file_pre = "";
+    String file_ext = "";
     HTMLPanel html_panel = null;
     ActionPanel action_panel = null;
-    FileModificationMonitor file_monitor = null;
+    Timer file_timer_task = null;
 
     public AntiWord()
     {
@@ -29,7 +32,7 @@ public class AntiWord extends JFrame
       boolean file_specified = false;
       if(cur_filepath != null)
       {
-         file_loaded = this.setFile(cur_filepath);
+         file_loaded = setFile(cur_filepath);
          file_specified = true;
       }
 
@@ -42,7 +45,7 @@ public class AntiWord extends JFrame
       // Set up the application frame.
       app_frame = new JFrame(Strings.APPNAME);
       html_panel = new HTMLPanel();
-      action_panel = new ActionPanel();
+      action_panel = new ActionPanel(file_ext);
 
       Container cp = app_frame.getContentPane();
       cp.setLayout(new BorderLayout());
@@ -60,46 +63,28 @@ public class AntiWord extends JFrame
    public void run()
    {
       // load the file, and display it in the panel.
-      html_panel.setHTML(readStringFromFile());
+      html_panel.setHTML(Utility.readStringFromFile(cur_file));
    }
 
-   public String readStringFromFile()
+    @Override
+   public void reloadFile()
    {
-      BufferedReader br = null;
-      try
-      {
-         br = new BufferedReader(new FileReader(cur_file));
-      }
-      catch(java.io.FileNotFoundException exc)
-      {
-         return null;
-      }
-
-      StringBuilder sb = new StringBuilder();
-      try
-      {
-         boolean done = false;
-         do
-         {
-            String s = br.readLine();
-            if(s == null)
-            {
-               done = true;
-            }
-            else
-            {
-               sb.append(s);
-            }
-         } while(!done);
-      }
-      catch(java.io.IOException exc)
-      {
-         JOptionPane.showMessageDialog(null, "Error: " + exc.getMessage(), Strings.APPNAME, JOptionPane.ERROR_MESSAGE);
-      }
-
-      return sb.toString();
-   }
-
+       String html_content = "";
+       
+       if(file_is_html)
+       {
+           html_content = Utility.readStringFromFile(cur_file);
+       }
+       else
+       {
+           html_content = Utility.processCmd(Settings.md_processor_cmd);
+       }
+       
+       // invoke the processor to convert the file.
+       
+       html_panel.setHTML(html_content);
+   }    
+   
    protected boolean setFile(String fpath)
    {
        if(fpath != null)
@@ -116,12 +101,24 @@ public class AntiWord extends JFrame
       }
 
       // excellent. Set up a file notification monitor.
-      if(file_monitor != null)
+      if(file_timer_task != null)
       {
+          file_timer_task.cancel();
       }
 
-      file_monitor = new AntiWord.FileModificationMonitor(cur_file);
+      file_timer_task = new Timer();
+      file_timer_task.schedule(new FileModificationMonitor(cur_file, this), 1000, 1000);
 
+      // grab the filename and extension while we're at it.
+      String[] parts = cur_filepath.split("\\.(?=[^\\.]+$)");
+      file_pre = parts[0];
+      file_ext = parts[1];
+      
+      if(file_ext.matches("htm[l]"))
+      {
+          file_is_html = true;
+      }
+      
       return true;
    }
 
@@ -134,7 +131,7 @@ public class AntiWord extends JFrame
          app_instance.run();
       }
    }
-
+   
    private void parseArgs(String args[])
    {
       for(String arg : args)
@@ -149,36 +146,5 @@ public class AntiWord extends JFrame
          }
       }
    }
-
-   private class FileModificationMonitor extends TimerTask
-   {
-      private long last_timestamp;
-      private File file;
-
-      public FileModificationMonitor(File file)
-      {
-         this.file = file;
-         this.last_timestamp = file.lastModified();
-      }
-
-      public final void run()
-      {
-         long cur_timestamp = file.lastModified();
-
-         if(last_timestamp != cur_timestamp)
-         {
-            notifyChange(file);
-            last_timestamp = cur_timestamp;
-         }
-      }
-
-      protected void notifyChange(File file)
-      {
-         // reload the document.
-         
-         JOptionPane.showMessageDialog(null, "The document has changed!");
-      }
-   }
-
 }
 
