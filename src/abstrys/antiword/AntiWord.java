@@ -2,16 +2,13 @@ package abstrys.antiword;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.Timer;
 import javax.swing.*;
 
 public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsFile
 {
     JFrame app_frame = null;
-    String cur_filepath = null;
     File cur_file = null;
     boolean file_is_html = false;
     String file_pre = "";
@@ -26,15 +23,18 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
 
    public boolean init(String args[])
    {
-      parseArgs(args);
+      String fpath = parseArgs(args);
 
       boolean file_loaded = false;
       boolean file_specified = false;
-      if(cur_filepath != null)
+      
+      if(fpath == null)
       {
-         file_loaded = setFile(cur_filepath);
-         file_specified = true;
+          JOptionPane.showMessageDialog(this, Strings.ERROR_NO_FILE_SPECIFIED, Strings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
+          return false;
       }
+      
+      file_loaded = setFile(fpath);
 
       // the file was specified, but it could not be loaded. The user has been notified (in the setFile method).
       if(file_specified && !file_loaded)
@@ -45,7 +45,7 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
       // Set up the application frame.
       app_frame = new JFrame(Strings.APPNAME);
       html_panel = new HTMLPanel();
-      action_panel = new ActionPanel(file_ext);
+      action_panel = new ActionPanel();
 
       Container cp = app_frame.getContentPane();
       cp.setLayout(new BorderLayout());
@@ -63,7 +63,7 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
    public void run()
    {
       // load the file, and display it in the panel.
-      html_panel.setHTML(Utility.readStringFromFile(cur_file));
+      reloadFile();
    }
 
     @Override
@@ -77,26 +77,29 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
        }
        else
        {
-           html_content = Utility.processCmd(Settings.md_processor_cmd);
+           // invoke the processor to convert the file.
+           html_content = Utility.processCmd(Settings.md_processor_cmd + " " + cur_file.getPath());
+           if(Settings.display_word_count)
+           {
+               action_panel.setWordCount(Utility.countWordsInString(Utility.readStringFromFile(cur_file)));
+           }           
        }
-       
-       // invoke the processor to convert the file.
        
        html_panel.setHTML(html_content);
    }    
    
    protected boolean setFile(String fpath)
    {
-       if(fpath != null)
+       if(fpath == null)
        {
-           cur_filepath = fpath;
+           return false;
        }
        
       // check to see if the file exists.
-      cur_file = new File(cur_filepath);
+      cur_file = new File(fpath);
       if(!cur_file.exists())
       {
-         JOptionPane.showMessageDialog(null, "A filename was specified, but does not exist!");
+         JOptionPane.showMessageDialog(this, Strings.ERROR_BAD_FILEPATH);
          return false;
       }
 
@@ -110,7 +113,7 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
       file_timer_task.schedule(new FileModificationMonitor(cur_file, this), 1000, 1000);
 
       // grab the filename and extension while we're at it.
-      String[] parts = cur_filepath.split("\\.(?=[^\\.]+$)");
+      String[] parts = cur_file.getName().split("\\.(?=[^\\.]+$)");
       file_pre = parts[0];
       file_ext = parts[1];
       
@@ -118,6 +121,8 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
       {
           file_is_html = true;
       }
+      
+      app_frame.setTitle(cur_file.getName());
       
       return true;
    }
@@ -132,8 +137,15 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
       }
    }
    
-   private void parseArgs(String args[])
+   /**
+    * Returns the args. If a file was specified (required!), then it returns the file path in the return value.
+    * @param args the command-line arguments.
+    * @return the filepath
+    */
+   private String parseArgs(String args[])
    {
+       String fpath = null;
+       
       for(String arg : args)
       {
          if(arg.startsWith("-"))
@@ -142,9 +154,11 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
          }
          else // expect a filename.
          {
-            cur_filepath = arg;
+            fpath = arg;
          }
       }
+      
+      return fpath;      
    }
 }
 

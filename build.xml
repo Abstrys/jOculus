@@ -29,6 +29,13 @@
       </jar>
    </target>
 
+   <target name="run" description="run the app">
+      <java jar="${dist}/${ant.project.name}.jar" fork="true">
+      <sysproperty key="DEBUG" value="true"/>
+      <arg value="${basedir}/test.md"/>
+    </java>
+   </target>
+
    <target name="clean" description="clean up the build" >
       <delete dir="${build}"/>
    </target>

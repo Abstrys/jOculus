@@ -5,7 +5,6 @@
 package abstrys.antiword;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -34,15 +33,19 @@ public class Utility
         
         if(cmd_proc != null)
         {
-            BufferedReader br = new BufferedReader(new InputStreamReader(cmd_proc.getInputStream()));
-            output_str = readStringFromReader(br);
+            BufferedReader error_reader = new BufferedReader(new InputStreamReader(cmd_proc.getErrorStream()));
+            BufferedReader output_reader = new BufferedReader(new InputStreamReader(cmd_proc.getInputStream()));
+            output_str = readStringFromReader(output_reader);
+            String error_str = readStringFromReader(error_reader);
+            if(error_str.length() > 0)
+            {
+                JOptionPane.showMessageDialog(null, error_str, "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }            
         
         return output_str;
     }
 
-    
-    
    public static String readStringFromReader(BufferedReader br)
    {
 
@@ -86,5 +89,26 @@ public class Utility
       }
       
       return Utility.readStringFromReader(br);
-   }   
+   }
+   
+   public static int countWordsInString(String s)
+   {
+       boolean prev_char_was_space = false;
+       int wc = 0;
+       
+       for(int i = 0; i < s.length(); i++)
+       {
+           if(s.charAt(i) == ' ')
+           {
+               prev_char_was_space = true;
+           }
+           else if(prev_char_was_space)
+           {
+               wc++;
+               prev_char_was_space = false;
+           }           
+       }
+       
+       return wc;
+   }
 }

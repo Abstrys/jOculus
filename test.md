@@ -17,4 +17,12 @@ Yes.
 
 And there's *this* and **that** and even more things to add!
 
-W
+Why, oh why did I make this program? Is there a purpose to it all? Do I have some kind of mad plan to take people away from using word processors and back to writing in pure text files?
+
+Yes!  Yes, that's it!!  :)
+
+## The purpose
+
+There is a purpose to our lives, I think. Something that drives us forward, and brings us the experiences that we need in order to grow, learn, and realize our ultimate selves.
+
+What it is, however, I have yet to discern. Perhaps that is a purpose we all share?
