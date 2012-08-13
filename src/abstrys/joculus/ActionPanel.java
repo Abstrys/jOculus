@@ -1,4 +1,4 @@
-package abstrys.antiword;
+package abstrys.joculus;
 
 import java.awt.*;
 import javax.swing.*;
@@ -7,34 +7,15 @@ class ActionPanel extends JPanel
 {
    JLabel label_msg = null;
    JLabel label_wc = null;
-   
-    ActionPanel()
-    {
-        this("");
-    }   
-   
-   public ActionPanel(String message)
+      
+   public ActionPanel()
    {
       //setBackground(Settings.action_panel_color);
       Dimension d = Settings.default_size;
 
-      if(message != null)
-      {
-          message = "";
-      }
-
-      label_msg = new JLabel(message);
-      add(label_msg);
-
       label_wc = new JLabel();
-      if(Settings.display_word_count)
-      {
-          if(message != null)
-          {
-              add(new JSeparator(JSeparator.VERTICAL));
-          }
-          add(label_wc);
-      }
+      add(label_wc);
+      label_wc.setVisible(Settings.display_word_count);
    }
    
    public void setWordCount(int wc)

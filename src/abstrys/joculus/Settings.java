@@ -1,4 +1,4 @@
-package abstrys.antiword;
+package abstrys.joculus;
 import java.awt.Color;
 import java.awt.Dimension;
 
