@@ -1,4 +1,4 @@
-package abstrys.antiword;
+package abstrys.joculus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -6,7 +6,7 @@ import java.io.File;
 import java.util.Timer;
 import javax.swing.*;
 
-public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsFile
+public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFile
 {
     JFrame app_frame = null;
     File cur_file = null;
@@ -17,14 +17,18 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
     ActionPanel action_panel = null;
     Timer file_timer_task = null;
 
-    public AntiWord()
+    public Joculus()
     {
     }
 
    public boolean init(String args[])
    {
       String fpath = parseArgs(args);
-            
+
+      app_frame = new JFrame();
+      html_panel = new HTMLPanel();
+      action_panel = new ActionPanel();
+      
       if(fpath == null)
       {
           JOptionPane.showMessageDialog(this, Strings.ERROR_NO_FILE_SPECIFIED, Strings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
@@ -38,9 +42,6 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
       }
 
       // Set up the application frame.
-      app_frame = new JFrame(cur_file.getName());
-      html_panel = new HTMLPanel();
-      action_panel = new ActionPanel();
 
       Container cp = app_frame.getContentPane();
       cp.setLayout(new BorderLayout());
@@ -120,7 +121,7 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
       
       if(app_frame != null)
       {
-          app_frame.setTitle(cur_file.getName());
+          app_frame.setTitle(Strings.APPNAME + " - " + cur_file.getName());
       }
 
       return true;
@@ -128,7 +129,7 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
 
    public static void main(String args[])
    {
-      AntiWord app_instance = new AntiWord();
+      Joculus app_instance = new Joculus();
 
       if(app_instance.init(args))
       {

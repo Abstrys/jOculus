@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project name="Antiword" default="build" basedir=".">
+<project name="jOculus" default="build" basedir=".">
    <description>Build Antiword</description>
 
    <!-- set global properties for this build -->
@@ -23,7 +23,7 @@
       <jar jarfile="${dist}/${ant.project.name}.jar" index="true" indexMetaInf="true" basedir="${build}">
          <manifest>
             <attribute name="Built-By" value="${user.name}"/>
-            <attribute name="Main-Class" value="abstrys.antiword.AntiWord"/>
+            <attribute name="Main-Class" value="abstrys.joculus.Joculus"/>
             <attribute name="Sealed" value="true"/>
          </manifest>
       </jar>

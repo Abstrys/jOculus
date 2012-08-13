@@ -1,4 +1,4 @@
-package abstrys.antiword;
+package abstrys.joculus;
 
 import javax.swing.JPanel;
 import javax.swing.JEditorPane;
