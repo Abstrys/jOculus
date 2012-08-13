@@ -24,26 +24,21 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
    public boolean init(String args[])
    {
       String fpath = parseArgs(args);
-
-      boolean file_loaded = false;
-      boolean file_specified = false;
-      
+            
       if(fpath == null)
       {
           JOptionPane.showMessageDialog(this, Strings.ERROR_NO_FILE_SPECIFIED, Strings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
           return false;
       }
       
-      file_loaded = setFile(fpath);
-
-      // the file was specified, but it could not be loaded. The user has been notified (in the setFile method).
-      if(file_specified && !file_loaded)
+      if(!setFile(fpath))
       {
+         // the file was specified, but it could not be loaded. The user has been notified (in the setFile method).
          return false;
       }
 
       // Set up the application frame.
-      app_frame = new JFrame(Strings.APPNAME);
+      app_frame = new JFrame(cur_file.getName());
       html_panel = new HTMLPanel();
       action_panel = new ActionPanel();
 
@@ -69,7 +64,7 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
     @Override
    public void reloadFile()
    {
-       String html_content = "";
+       String html_content;
        
        if(file_is_html)
        {
@@ -114,16 +109,20 @@ public class AntiWord extends JFrame implements FileModificationMonitor.ReloadsF
 
       // grab the filename and extension while we're at it.
       String[] parts = cur_file.getName().split("\\.(?=[^\\.]+$)");
+
       file_pre = parts[0];
       file_ext = parts[1];
-      
+           
       if(file_ext.matches("htm[l]"))
       {
           file_is_html = true;
       }
       
-      app_frame.setTitle(cur_file.getName());
-      
+      if(app_frame != null)
+      {
+          app_frame.setTitle(cur_file.getName());
+      }
+
       return true;
    }
 
