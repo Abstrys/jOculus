@@ -83,9 +83,19 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       else
       {
          // invoke the processor to convert the file.
-         html_content = Utility.processCmd(
-                 settings.md_processor_path + " "
-                 + settings.md_processor_opt + " " + cur_file.getPath());
+         File f = new File(settings.md_processor_path);
+         if(!f.exists())
+         {
+            Joculus.showError(Strings.ERROR_INVALID_PROCESSOR_PATH);
+            html_content = Utility.readStringFromFile(cur_file);
+         }
+         else
+         {
+            html_content = Utility.processCmd(
+                    settings.md_processor_path + " "
+                    + settings.md_processor_opt + " " + cur_file.getPath());
+         }
+
          if (settings.display_word_count)
          {
             action_panel.setWordCount(Utility.countWordsInString(Utility.readStringFromFile(cur_file)));
@@ -171,5 +181,10 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       }
 
       return fpath;
+   }
+
+   public static void showError(String err_msg)
+   {
+      JOptionPane.showMessageDialog(null, err_msg, Strings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
    }
 }

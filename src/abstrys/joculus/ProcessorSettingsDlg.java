@@ -81,7 +81,7 @@ class ProcessorSettingsDlg extends JDialog
                else
                {
                   path_field.setForeground(Color.RED);
-                  path_field.setText(file.getAbsolutePath() + " [" + Strings.INVALID_PATH + "]");
+                  path_field.setText(file.getAbsolutePath() + " [" + Strings.ERROR_INVALID_PATH + "]");
                }
                path_field.setText(file.getAbsolutePath());
             }
@@ -175,6 +175,8 @@ class ProcessorSettingsDlg extends JDialog
       app_settings.md_processor_name = name_field.getText();
       app_settings.md_processor_path = path_field.getText();
       app_settings.md_processor_opt = options_field.getText();
+      app_settings.save();
+      this.dispose();
    }
 
    private void cancel()

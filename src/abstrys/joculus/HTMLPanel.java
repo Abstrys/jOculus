@@ -1,10 +1,10 @@
 package abstrys.joculus;
 
-import javax.swing.JPanel;
-import javax.swing.JEditorPane;
-import javax.swing.JScrollPane;
-import java.awt.Dimension;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 class HTMLPanel extends JPanel
