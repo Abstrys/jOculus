@@ -15,7 +15,7 @@ class HTMLPanel extends JPanel
    /**
     * Default constructor
     */
-   public HTMLPanel()
+   public HTMLPanel(Settings s)
    {
       ep = new JEditorPane();
       ep.setEditable(false);
@@ -24,7 +24,7 @@ class HTMLPanel extends JPanel
 
       sp = new JScrollPane(ep);
       sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-      sp.setPreferredSize(Settings.default_size);
+      sp.setPreferredSize(s.window_size_default);
       sp.setMinimumSize(new Dimension(40, 40));
 
       this.setLayout(new BorderLayout());
