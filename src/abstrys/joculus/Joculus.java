@@ -8,34 +8,38 @@ import javax.swing.*;
 
 public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFile
 {
-    JFrame app_frame = null;
-    File cur_file = null;
-    boolean file_is_html = false;
-    String file_pre = "";
-    String file_ext = "";
-    HTMLPanel html_panel = null;
-    ActionPanel action_panel = null;
-    Timer file_timer_task = null;
+   JFrame app_frame = null;
+   File cur_file = null;
+   boolean file_is_html = false;
+   String file_pre = "";
+   String file_ext = "";
+   HTMLPanel html_panel = null;
+   ActionPanel action_panel = null;
+   Timer file_timer_task = null;
+   Settings settings;
 
-    public Joculus()
-    {
-    }
+   public Joculus()
+   {
+   }
 
    public boolean init(String args[])
    {
+      settings = new Settings();
+      settings.load();
+
       String fpath = parseArgs(args);
 
       app_frame = new JFrame();
-      html_panel = new HTMLPanel();
-      action_panel = new ActionPanel();
-      
-      if(fpath == null)
+      html_panel = new HTMLPanel(settings);
+      action_panel = new ActionPanel(settings);
+
+      if (fpath == null)
       {
-          JOptionPane.showMessageDialog(this, Strings.ERROR_NO_FILE_SPECIFIED, Strings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
-          return false;
+         JOptionPane.showMessageDialog(this, Strings.ERROR_NO_FILE_SPECIFIED, Strings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
+         return false;
       }
-      
-      if(!setFile(fpath))
+
+      if (!setFile(fpath))
       {
          // the file was specified, but it could not be loaded. The user has been notified (in the setFile method).
          return false;
@@ -62,47 +66,54 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       reloadFile();
    }
 
-    @Override
+   Settings getSettings()
+   {
+      return settings;
+   }
+
+   @Override
    public void reloadFile()
    {
-       String html_content;
-       
-       if(file_is_html)
-       {
-           html_content = Utility.readStringFromFile(cur_file);
-       }
-       else
-       {
-           // invoke the processor to convert the file.
-           html_content = Utility.processCmd(Settings.md_processor_cmd + " " + cur_file.getPath());
-           if(Settings.display_word_count)
-           {
-               action_panel.setWordCount(Utility.countWordsInString(Utility.readStringFromFile(cur_file)));
-           }           
-       }
-       
-       html_panel.setHTML(html_content);
-   }    
-   
+      String html_content;
+
+      if (file_is_html)
+      {
+         html_content = Utility.readStringFromFile(cur_file);
+      }
+      else
+      {
+         // invoke the processor to convert the file.
+         html_content = Utility.processCmd(
+                 settings.md_processor_path + " "
+                 + settings.md_processor_opt + " " + cur_file.getPath());
+         if (settings.display_word_count)
+         {
+            action_panel.setWordCount(Utility.countWordsInString(Utility.readStringFromFile(cur_file)));
+         }
+      }
+
+      html_panel.setHTML(html_content);
+   }
+
    protected boolean setFile(String fpath)
    {
-       if(fpath == null)
-       {
-           return false;
-       }
-       
+      if (fpath == null)
+      {
+         return false;
+      }
+
       // check to see if the file exists.
       cur_file = new File(fpath);
-      if(!cur_file.exists())
+      if (!cur_file.exists())
       {
          JOptionPane.showMessageDialog(this, Strings.ERROR_BAD_FILEPATH);
          return false;
       }
 
       // excellent. Set up a file notification monitor.
-      if(file_timer_task != null)
+      if (file_timer_task != null)
       {
-          file_timer_task.cancel();
+         file_timer_task.cancel();
       }
 
       file_timer_task = new Timer();
@@ -113,15 +124,15 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
 
       file_pre = parts[0];
       file_ext = parts[1];
-           
-      if(file_ext.matches("htm[l]"))
+
+      if (file_ext.matches("htm[l]"))
       {
-          file_is_html = true;
+         file_is_html = true;
       }
-      
-      if(app_frame != null)
+
+      if (app_frame != null)
       {
-          app_frame.setTitle(Strings.APPNAME + " - " + cur_file.getName());
+         app_frame.setTitle(Strings.APPNAME + " - " + cur_file.getName());
       }
 
       return true;
@@ -131,24 +142,25 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
    {
       Joculus app_instance = new Joculus();
 
-      if(app_instance.init(args))
+      if (app_instance.init(args))
       {
          app_instance.run();
       }
    }
-   
+
    /**
     * Returns the args. If a file was specified (required!), then it returns the file path in the return value.
+    *
     * @param args the command-line arguments.
     * @return the filepath
     */
    private String parseArgs(String args[])
    {
-       String fpath = null;
-       
-      for(String arg : args)
+      String fpath = null;
+
+      for (String arg : args)
       {
-         if(arg.startsWith("-"))
+         if (arg.startsWith("-"))
          {
             // TODO: maybe add something here.
          }
@@ -157,8 +169,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
             fpath = arg;
          }
       }
-      
-      return fpath;      
+
+      return fpath;
    }
 }
-

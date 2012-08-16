@@ -32,7 +32,7 @@
    <target name="run" description="run the app">
       <java jar="${dist}/${ant.project.name}.jar" fork="true">
       <sysproperty key="DEBUG" value="true"/>
-      <arg value="${basedir}/test.md"/>
+      <arg value="${basedir}/testfiles/test.md"/>
     </java>
    </target>
 
