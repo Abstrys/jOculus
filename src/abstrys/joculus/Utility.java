@@ -20,8 +20,8 @@ public class Utility
     static String processCmd(String cmdline)
     {
         String output_str = "";
-        Process cmd_proc = null;
-        
+        Process cmd_proc;
+
         try
         {
             cmd_proc = Runtime.getRuntime().exec(cmdline);
@@ -30,7 +30,7 @@ public class Utility
         {
             return "";
         }
-        
+
         if(cmd_proc != null)
         {
             BufferedReader error_reader = new BufferedReader(new InputStreamReader(cmd_proc.getErrorStream()));
@@ -41,8 +41,8 @@ public class Utility
             {
                 JOptionPane.showMessageDialog(null, error_str, "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }            
-        
+        }
+
         return output_str;
     }
 
@@ -65,7 +65,7 @@ public class Utility
                sb.append(s);
             }
          } while(!done);
-         
+
          br.close();
       }
       catch(java.io.IOException exc)
@@ -75,7 +75,7 @@ public class Utility
 
       return sb.toString();
    }
-   
+
    public static String readStringFromFile(File file_to_read)
    {
       BufferedReader br;
@@ -87,15 +87,15 @@ public class Utility
       {
          return null;
       }
-      
+
       return Utility.readStringFromReader(br);
    }
-   
+
    public static int countWordsInString(String s)
    {
        boolean prev_char_was_space = false;
        int wc = 0;
-       
+
        for(int i = 0; i < s.length(); i++)
        {
            if(s.charAt(i) == ' ')
@@ -106,9 +106,9 @@ public class Utility
            {
                wc++;
                prev_char_was_space = false;
-           }           
+           }
        }
-       
+
        return wc;
    }
 }
