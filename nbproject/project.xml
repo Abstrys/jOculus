@@ -63,6 +63,11 @@
                 <location>dist</location>
                 <build-target>build</build-target>
             </export>
+            <export>
+                <type>folder</type>
+                <location>lib</location>
+                <build-target>build</build-target>
+            </export>
             <view>
                 <items>
                     <source-folder style="packages">
@@ -86,9 +91,10 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/3">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">src</classpath>
+                <classpath mode="compile">src:lib/core-renderer.jar:lib/iText-2.0.8.jar</classpath>
                 <built-to>build</built-to>
                 <built-to>dist</built-to>
+                <built-to>lib</built-to>
                 <source-level>1.6</source-level>
             </compilation-unit>
         </java-data>
