@@ -1,2 +1,4 @@
-java -jar ~/bin/jOculus.jar $@ &
+#!/bin/sh
+JOCULUSDIR=/Users/eronh/bin/jOculus_app/
+java -cp $JOCULUSDIR/jOculus.jar:$JOCULUSDIR/lib/core-renderer.jar:$JOCULUSDIR/lib/iText-2.0.8.jar abstrys.joculus.Joculus $@ &
 

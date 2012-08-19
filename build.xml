@@ -12,18 +12,43 @@
       <echo>${ant.project.name} build ${DSTAMP}${TSTAMP}</echo>
    </target>
 
+   <path id="build.classpath">
+      <fileset dir="${basedir}/">
+         <include name="${lib.dir}/*.jar"/>
+      </fileset>
+   </path>
+
+   <pathconvert property="mf.classpath" pathsep=" ">
+      <path refid="build.classpath"/>
+      <mapper>
+         <chainedmapper>
+            <flattenmapper/>
+            <globmapper from="*.jar" to="lib/*.jar"/>
+         </chainedmapper>
+      </mapper>
+   </pathconvert>
+
+
    <!-- Build all -->
    <target name="all" depends="build" description="Build all"/>
 
    <!-- Build pwgen, the command-line application -->
    <target name="build" depends="init" description="Build ${ant.project.name}">
       <mkdir dir="${build}/"/>
-      <javac srcdir="${src}" destdir="${build}" includeantruntime="false"/>
+      <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+      <classpath id="classpath" description="The default classpath.">
+        <pathelement path="${classpath}"/>
+        <fileset dir="lib">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+      </javac>
       <mkdir dir="${dist}/"/>
-      <jar jarfile="${dist}/${ant.project.name}.jar" index="true" indexMetaInf="true" basedir="${build}">
+      <jar destfile="${dist}/${ant.project.name}.jar" index="true" indexMetaInf="true" basedir="${build}">
          <manifest>
             <attribute name="Built-By" value="${user.name}"/>
             <attribute name="Main-Class" value="abstrys.joculus.Joculus"/>
+            <attribute name="Class-Path" value="abstrys.joculus.Joculus"/>
             <attribute name="Sealed" value="true"/>
          </manifest>
       </jar>

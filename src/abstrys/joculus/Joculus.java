@@ -39,7 +39,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
          return false;
       }
 
-      if (!setFile(fpath))
+      if(!setFile(fpath))
       {
          // the file was specified, but it could not be loaded. The user has been notified (in the setFile method).
          return false;
@@ -74,35 +74,52 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
    @Override
    public void reloadFile()
    {
-      String html_content;
+      StringBuilder html_content = new StringBuilder();
+      final String xhtml_doc_start = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">";
+      final String xhtml_head_start = "<head>";
+      final String xhtml_head_end = "</head>";
+      final String xhtml_body_start = "<body>";
+      final String xhtml_body_end = "</body>";
+      final String xhtml_doc_end = "</html>";
+      String base_url = "";
 
       if (file_is_html)
       {
-         html_content = Utility.readStringFromFile(cur_file);
+         html_content.append(Utility.readStringFromFile(cur_file));
       }
       else
       {
          // invoke the processor to convert the file.
          File f = new File(settings.md_processor_path);
+         html_content.append(xhtml_doc_start);
+         html_content.append(xhtml_head_start);
+         // TODO: add the stylesheet here.
+         html_content.append(xhtml_head_end);
+         html_content.append(xhtml_body_start);
          if(!f.exists())
          {
             Joculus.showError(Strings.ERROR_INVALID_PROCESSOR_PATH);
-            html_content = Utility.readStringFromFile(cur_file);
+            html_content.append("<p>" + Strings.ERROR_INVALID_PROCESSOR_PATH + "</p>");
          }
          else
          {
-            html_content = Utility.processCmd(
+            
+            html_content.append(Utility.processCmd(
                     settings.md_processor_path + " "
-                    + settings.md_processor_opt + " " + cur_file.getPath());
+                    + settings.md_processor_opt + " " + cur_file.getPath()));
          }
-
+         html_content.append(xhtml_body_end);
+         html_content.append(xhtml_doc_end);
+         
          if (settings.display_word_count)
          {
             action_panel.setWordCount(Utility.countWordsInString(Utility.readStringFromFile(cur_file)));
          }
       }
-
-      html_panel.setHTML(html_content);
+      
+      base_url = "file://" + cur_file.getParentFile().getAbsolutePath() + "/";
+      Joculus.showError("base_url is: " + base_url);
+      html_panel.setHTML(html_content.toString(), base_url);
    }
 
    protected boolean setFile(String fpath)

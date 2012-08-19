@@ -6,10 +6,13 @@ import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import org.xhtmlrenderer.simple.XHTMLPanel;
+import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 
 class HTMLPanel extends JPanel
 {
-   private JEditorPane ep = null;
+   private XHTMLPanel ep = null;
+   //private JEditorPane ep = null;
    private JScrollPane sp = null;
 
    /**
@@ -17,9 +20,10 @@ class HTMLPanel extends JPanel
     */
    public HTMLPanel(Settings s)
    {
-      ep = new JEditorPane();
-      ep.setEditable(false);
-      ep.setContentType("text/html");
+      ep = new XHTMLPanel();
+      ep.setDoubleBuffered(true);
+//      ep.setEditable(false);
+//      ep.setContentType("text/html");
       ep.setBorder(new EmptyBorder(10,10,10,10));
 
       sp = new JScrollPane(ep);
@@ -31,8 +35,15 @@ class HTMLPanel extends JPanel
       this.add(sp, BorderLayout.CENTER);
    }
 
-   public void setHTML(String html)
+   public void setHTML(String html, String base_url)
    {
-      ep.setText(html);
+      try
+      {
+         ep.setDocumentFromString(html, base_url, new XhtmlNamespaceHandler());
+      }
+      catch(org.xhtmlrenderer.util.XRRuntimeException ex)
+      {
+         Joculus.showError("XML Renderer runtime exception:\n" + ex.getMessage());
+      }
    }
 }
