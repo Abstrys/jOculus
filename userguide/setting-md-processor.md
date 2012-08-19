@@ -16,14 +16,16 @@ Any of these, or any other processors that can be run from the command-line, can
 
 **To set the Markdown Processor:**
 
-1. Click the **Settings** button in the action menu. This will launch the **Markdown Processor Settings** dialog.
+1. Click the **Settings** button in the action menu. This will launch the **Markdown Processor Settings** dialog:
+
+    ![](images/md_processor_settings_dlg.png)
 
 2. In the **Processor name** field, set the name of your Markdown processor. This can be anything you want; it serves only to identify the Markdown processor.
 
 3. In the **Path to processor** field, type the full path to the Markdown processor you're using. For example: `/usr/bin/markdown`. Alternatively, you can click the **Browse** button to select the Markdown processor with a file browser.
 
 4. In the **Processor options** field, type any options you want to include in the command-line that will be used to process the Markdown into HTML. Some processors may not need (or even support) command-line options; it's fine to leave this field blank.
- 
+
 5. Click **Save** to save your settings. The Markdown processor you set here will be used the next time the main view is updated.
 
 [pandoc]: http://johnmacfarlane.net/pandoc/
