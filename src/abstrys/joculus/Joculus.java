@@ -81,7 +81,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       final String xhtml_body_start = "<body>";
       final String xhtml_body_end = "</body>";
       final String xhtml_doc_end = "</html>";
-      String base_url = "";
+      String base_url;
 
       if (file_is_html)
       {
@@ -118,7 +118,6 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       }
       
       base_url = "file://" + cur_file.getParentFile().getAbsolutePath() + "/";
-      Joculus.showError("base_url is: " + base_url);
       html_panel.setHTML(html_content.toString(), base_url);
    }
 
