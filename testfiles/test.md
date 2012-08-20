@@ -6,14 +6,14 @@ Well, here we are again, and I'm going to type right past the 78th character on 
 
 One of the neat things that .vimrc files can do is apply conditional rules by filetype, by using `if &ft` blocks. For example, from my own `.vimrc`:
 
+~~~~
     autocmd FileType markdown
         \ setlocal sw=4 ts=4 wrap lbr tw=0 wrapmargin=0
+~~~~
 
-# This is still markdown woooo!
+On an unrelated topic, do you like cats? Here's one:
 
-Yes.
-
-## This is even better!
+![Purrmenides the philosophical kitty](images/Purr.png)
 
 And there's *this* and **that** and even more things to add!
 

@@ -13,6 +13,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
    boolean file_is_html = false;
    String file_pre = "";
    String file_ext = "";
+   String base_url = ""; // the URL form of the file's parent directory.
    HTMLPanel html_panel = null;
    ActionPanel action_panel = null;
    Timer file_timer_task = null;
@@ -81,7 +82,6 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       final String xhtml_body_start = "<body>";
       final String xhtml_body_end = "</body>";
       final String xhtml_doc_end = "</html>";
-      String base_url;
 
       if (file_is_html)
       {
@@ -90,20 +90,18 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       else
       {
          // invoke the processor to convert the file.
-         File f = new File(settings.md_processor_path);
          html_content.append(xhtml_doc_start);
          html_content.append(xhtml_head_start);
          // TODO: add the stylesheet here.
          html_content.append(xhtml_head_end);
          html_content.append(xhtml_body_start);
+         File f = new File(settings.md_processor_path);
          if(!f.exists())
          {
             Joculus.showError(Strings.ERROR_INVALID_PROCESSOR_PATH);
-            html_content.append("<p>" + Strings.ERROR_INVALID_PROCESSOR_PATH + "</p>");
          }
          else
-         {
-            
+         {            
             html_content.append(Utility.processCmd(
                     settings.md_processor_path + " "
                     + settings.md_processor_opt + " " + cur_file.getPath()));
@@ -116,8 +114,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
             action_panel.setWordCount(Utility.countWordsInString(Utility.readStringFromFile(cur_file)));
          }
       }
-      
-      base_url = "file://" + cur_file.getParentFile().getAbsolutePath() + "/";
+            
       html_panel.setHTML(html_content.toString(), base_url);
    }
 
@@ -161,6 +158,8 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
          app_frame.setTitle(Strings.APPNAME + " - " + cur_file.getName());
       }
 
+      base_url = "file://" + cur_file.getAbsoluteFile().getParent() + "/";      
+      
       return true;
    }
 
