@@ -28,7 +28,7 @@ public class Utility
         }
         catch(IOException exc)
         {
-            return "";
+            return "<p>Error: " + Strings.ERROR_INVALID_PROCESSOR_PATH + "</p>";
         }
 
         if(cmd_proc != null)
@@ -110,5 +110,17 @@ public class Utility
        }
 
        return wc;
+   }
+   
+   public static String getUserHome()
+   {
+      String home = System.getProperty("user.home");
+      if (home == null)
+      {
+         Joculus.showError(Strings.ERROR_NO_HOME);
+         return null;
+      }
+
+      return home;
    }
 }

@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 class ActionPanel extends JPanel
 {
@@ -17,6 +18,7 @@ class ActionPanel extends JPanel
       setLayout(new BorderLayout());
 
       label_wc = new JLabel();
+      label_wc.setBorder(new EmptyBorder(2,6,2,2));
       add(label_wc, BorderLayout.CENTER);
       label_wc.setVisible(s.display_word_count);
 

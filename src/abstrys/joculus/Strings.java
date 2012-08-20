@@ -15,7 +15,6 @@ final class Strings
    protected static final String ERROR_INVALID_PROCESSOR_PATH = "Invalid processor path. Make sure you have a valid processor path specified in your settings.";
    protected static final String ERROR_INVALID_PATH = "Invalid path";
    protected static final String PROCESSOR_SETTINGS_DIALOG_TITLE = APPNAME + " - Markdown Processor Settings";
-   protected static final String SETTINGS_FILENAME = "." + APPNAME;
    protected static final String UI_CANCEL_LABEL = "Cancel";
    protected static final String UI_PROC_NAME_LABEL = "Processor name";
    protected static final String UI_PROC_OPTIONS_LABEL = "Processor options";

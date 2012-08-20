@@ -1,102 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://www.netbeans.org/ns/project/1">
-    <type>org.netbeans.modules.ant.freeform</type>
+    <type>org.netbeans.modules.java.j2seproject</type>
     <configuration>
-        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+        <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
             <name>jOculus</name>
-        </general-data>
-        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
-            <!-- Do not use Project Properties customizer when editing this file manually. -->
-            <name>jOculus</name>
-            <properties/>
-            <folders>
-                <source-folder>
-                    <label>Antiword</label>
-                    <location>.</location>
-                    <encoding>UTF-8</encoding>
-                </source-folder>
-                <source-folder>
-                    <label>src</label>
-                    <type>java</type>
-                    <location>src</location>
-                    <encoding>UTF-8</encoding>
-                </source-folder>
-            </folders>
-            <ide-actions>
-                <action name="build">
-                    <target>build</target>
-                </action>
-                <action name="clean">
-                    <target>clean</target>
-                </action>
-                <action name="rebuild">
-                    <target>clean</target>
-                    <target>build</target>
-                </action>
-                <action name="compile.single">
-                    <script>nbproject/ide-file-targets.xml</script>
-                    <target>compile-selected-files-in-src</target>
-                    <context>
-                        <property>files</property>
-                        <folder>src</folder>
-                        <pattern>\.java$</pattern>
-                        <format>relative-path</format>
-                        <arity>
-                            <separated-files>,</separated-files>
-                        </arity>
-                    </context>
-                </action>
-                <action name="run">
-                    <target>run</target>
-                </action>
-                <action name="test">
-                    <target>run</target>
-                </action>
-            </ide-actions>
-            <export>
-                <type>folder</type>
-                <location>build</location>
-                <build-target>build</build-target>
-            </export>
-            <export>
-                <type>folder</type>
-                <location>dist</location>
-                <build-target>build</build-target>
-            </export>
-            <export>
-                <type>folder</type>
-                <location>lib</location>
-                <build-target>build</build-target>
-            </export>
-            <view>
-                <items>
-                    <source-folder style="packages">
-                        <label>src</label>
-                        <location>src</location>
-                    </source-folder>
-                    <source-file>
-                        <location>build.xml</location>
-                    </source-file>
-                </items>
-                <context-menu>
-                    <ide-action name="build"/>
-                    <ide-action name="rebuild"/>
-                    <ide-action name="clean"/>
-                    <ide-action name="run"/>
-                    <ide-action name="test"/>
-                </context-menu>
-            </view>
-            <subprojects/>
-        </general-data>
-        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/3">
-            <compilation-unit>
-                <package-root>src</package-root>
-                <classpath mode="compile">src:lib/core-renderer.jar:lib/iText-2.0.8.jar</classpath>
-                <built-to>build</built-to>
-                <built-to>dist</built-to>
-                <built-to>lib</built-to>
-                <source-level>1.6</source-level>
-            </compilation-unit>
-        </java-data>
+            <source-roots>
+                <root id="src.dir"/>
+            </source-roots>
+            <test-roots/>
+        </data>
+        <libraries xmlns="http://www.netbeans.org/ns/ant-project-libraries/1">
+            <definitions>./lib/nblibraries.properties</definitions>
+        </libraries>
     </configuration>
 </project>

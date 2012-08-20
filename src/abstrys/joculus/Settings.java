@@ -12,6 +12,8 @@ import java.util.Properties;
 
 class Settings
 {
+   final String SETTINGS_FILE = "options.xml";
+   
    // These settings are properties that are saved / loaded.
    Color action_panel_color;
    final String ACTION_PANEL_COLOR_R_PROPERTY_NAME = "action_panel_color_r";
@@ -49,14 +51,20 @@ class Settings
    }
 
    public boolean save()
-   {
-      String home = getUserHome();
-      if (home == null)
+   {      
+      // make sure the settings directory exists!
+      File settings_dir = new File(getSettingsPath());
+      if(!settings_dir.exists())
       {
-         return false;
+         settings_dir.mkdir();
+      }
+      else if(settings_dir.isFile())
+      {
+         settings_dir.delete();
+         settings_dir.mkdir();
       }
 
-      String complete_path = home + System.getProperty("file.separator") + Strings.SETTINGS_FILENAME;
+      String complete_path = settings_dir.getAbsolutePath() + File.separator + SETTINGS_FILE;
       File settingsFile = new File(complete_path);
       if (!settingsFile.exists())
       {
@@ -109,13 +117,18 @@ class Settings
 
    public boolean load()
    {
-      String home = getUserHome();
-      if (home == null)
+      File settings_dir = new File(getSettingsPath());
+      if(!settings_dir.exists())
       {
-         return false;
+         settings_dir.mkdir();
       }
-
-      String complete_path = home + System.getProperty("file.separator") + Strings.SETTINGS_FILENAME;
+      else if(settings_dir.isFile())
+      {
+         settings_dir.delete();
+         settings_dir.mkdir();
+      }      
+      
+      String complete_path = settings_dir.getAbsolutePath() + File.separator + SETTINGS_FILE;
       File settingsFile = new File(complete_path);
       if (!settingsFile.exists())
       {
@@ -175,16 +188,16 @@ class Settings
       window_size_default = new Dimension(400, 500);
       window_size_remember = true;
    }
-
-   public String getUserHome()
+   
+   public static String getSettingsPath()
    {
-      String home = System.getProperty("user.home");
-      if (home == null)
+      final String SETTINGS_DIR = ".jOculus";      
+      String home_path = Utility.getUserHome();
+      if(home_path == null)
       {
-         Joculus.showError(Strings.ERROR_NO_HOME);
          return null;
       }
-
-      return home;
+      
+      return home_path + File.separator + SETTINGS_DIR;
    }
 }
