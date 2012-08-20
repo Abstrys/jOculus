@@ -1,16 +1,24 @@
 /**
  * ActionPanel.java
  *
- *    Part of the jOculus project: https://github.com/Abstrys/jOculus
+ * Part of the jOculus project: https://github.com/Abstrys/jOculus
  *
- *    Copyright (C) 2012 by Eron Hennessey
+ * Copyright (C) 2012 by Eron Hennessey
  */
 package abstrys.joculus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Image;
+import java.awt.List;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Timer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFile
@@ -28,6 +36,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
 
    public Joculus()
    {
+
    }
 
    public boolean init(String args[])
@@ -38,6 +47,32 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       String fpath = parseArgs(args);
 
       app_frame = new JFrame();
+
+            // set the application icon
+      final String[] icon_names = { "jOculus-icon-256.png", "jOculus-icon-128.png",
+         "jOculus-icon-96.png", "jOculus-icon-64.png", "jOculus-icon-48.png",
+         "jOculus-icon-32.png", "jOculus-icon-16.png" };
+      ArrayList<BufferedImage> icon_list = new ArrayList<BufferedImage>();
+      for (String icon : icon_names)
+      {
+         BufferedImage i = null;
+         try
+         {
+            i = ImageIO.read(getClass().getClassLoader().getResource("abstrys/joculus/res/" + icon));
+         }
+         catch (IOException ex)
+         {
+            showError(ex.getMessage());
+         }
+
+         if(i != null)
+         {
+            icon_list.add(i);
+         }
+      }
+
+      app_frame.setIconImage(icon_list.get(3));
+
       html_panel = new HTMLPanel(settings);
       action_panel = new ActionPanel(settings);
 
@@ -47,7 +82,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
          return false;
       }
 
-      if(!setFile(fpath))
+      if (!setFile(fpath))
       {
          // the file was specified, but it could not be loaded. The user has been notified (in the setFile method).
          return false;
@@ -103,25 +138,25 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
          html_content.append(xhtml_head_end);
          html_content.append(xhtml_body_start);
          File f = new File(settings.md_processor_path);
-         if(!f.exists())
+         if (!f.exists())
          {
             Joculus.showError(Strings.ERROR_INVALID_PROCESSOR_PATH);
          }
          else
-         {            
+         {
             html_content.append(Utility.processCmd(
                     settings.md_processor_path + " "
                     + settings.md_processor_opt + " " + cur_file.getPath()));
          }
          html_content.append(xhtml_body_end);
          html_content.append(xhtml_doc_end);
-         
+
          if (settings.display_word_count)
          {
             action_panel.setWordCount(Utility.countWordsInString(Utility.readStringFromFile(cur_file)));
          }
       }
-            
+
       html_panel.setHTML(html_content.toString(), base_url);
    }
 
@@ -165,8 +200,8 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
          app_frame.setTitle(Strings.APPNAME + " - " + cur_file.getName());
       }
 
-      base_url = "file://" + cur_file.getAbsoluteFile().getParent() + "/";      
-      
+      base_url = "file://" + cur_file.getAbsoluteFile().getParent() + "/";
+
       return true;
    }
 

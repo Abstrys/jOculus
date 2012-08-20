@@ -1019,14 +1019,7 @@ is divided into following sections:
         </delete>
     </target>
     <target depends="init,compile,-pre-pre-jar,-pre-jar,-do-jar-with-libraries-create-manifest,-do-jar-with-libraries-copy-manifest,-do-jar-with-libraries-set-main,-do-jar-with-libraries-set-splashscreen,-do-jar-with-libraries-pack,-do-jar-with-libraries-delete-manifest" name="-do-jar-with-libraries"/>
-    <target name="-post-jar">
-        <!-- Assemble some files into the dist directory -->
-        <copy file="shell/install.sh" todir="${dist.dir}"/>
-        <chmod file="${dist.dir}/install.sh" perm="700"/>
-        <copy file="shell/joculus" todir="${dist.dir}"/>
-        <chmod file="${dist.dir}/joculus" perm="700"/>
-        <copy file="README.md" todir="${dist.dir}"/>
-    </target>
+
     <target depends="init,compile,-pre-jar,-do-jar-with-manifest,-do-jar-without-manifest,-do-jar-with-mainclass,-do-jar-with-libraries,-post-jar" description="Build JAR." name="jar"/>
     <!--
                 =================
