@@ -18,7 +18,7 @@ Any of these, or any other processors that can be run from the command-line, can
 
 1. Click the **Settings** button in the action menu. This will launch the **Markdown Processor Settings** dialog:
 
-    ![](images/md_processor_settings_dlg.png)
+    <img src="images/md_processor_settings_dlg.png"/>
 
 2. In the **Processor name** field, set the name of your Markdown processor. This can be anything you want; it serves only to identify the Markdown processor.
 
