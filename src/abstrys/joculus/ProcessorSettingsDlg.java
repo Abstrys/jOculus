@@ -1,6 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * ActionPanel.java
+ *
+ *    Part of the jOculus project: https://github.com/Abstrys/jOculus
+ *
+ *    Copyright (C) 2012 by Eron Hennessey
  */
 package abstrys.joculus;
 
