@@ -13,6 +13,26 @@ GNU General Public License, version 3 (GPL3). The GPL3 can be viewed at
 <http://www.gnu.org/licenses/gpl.html>. A copy of the license is also provided
 in the file titled LICENSE.txt.
 
+## Additional components.
+
+jOculus uses the following Java libraries:
+
+<table width="90%">
+    <tr><th>Library</th><th>Website</th></tr>
+    <tr>
+        <td>flyingsaucer-R8</td>
+        <td><a href="http://code.google.com/p/flying-saucer/">http://code.google.com/p/flying-saucer/</a></td>
+    </tr>
+    <tr>
+        <td>iText-2.0.8</td>
+        <td><a href="http://itextpdf.com/">http://itextpdf.com/</a></td>
+    </tr>
+</table>
+
+Built versions of these libraries are included with the jOculus distribution.
+If you'd like to compile these from source, or if you'd like updated versions
+of these libraries, please refer to the website associated with each library.
+
 ## Building jOculus
 
 ### Prerequisites
@@ -59,13 +79,23 @@ I recommend that you install jOculus in a private `bin` directory within your
 home directory. If you do, and you are in a bash command-line environment,
 you can also copy the `joculus` bash script from the `shell` directory.
 
-**To install jOculus (bash)**
+A bash script called `install.sh` resides in the `dist` directory after you
+build jOculus. It performs the following actions:
 
-* Type the following commands from within the jOculus directory:
+    mkdir ~/bin
+    cp joculus ~/bin
+    cp jOculus.jar ~/bin
+    mkdir ~/bin/lib
+    cp lib/* ~/bin/lib
 
-        $ cp dist/jOculus.jar ~/bin
-        $ cp shell/joculus ~/bin
-        $ chmod +x ~/bin/joculus
+If you'd like to use `install.sh`, simply execute the following commands after
+you build jOculus:
+
+    $ cd dist
+    $ ./install.sh
+
+otherwise, you can copy the files in dist to any location you like, provided
+that the `lib` directory is in the same directory as `jOculus.jar`.
 
 ## Running jOculus
 
@@ -74,7 +104,7 @@ If you installed jOculus with the bash script, you can simply run:
     $ joculus myfile.md
 
 Where myfile.md is the file to show in the viewer window (it can be any text,
-markdown, or html file).
+Markdown, or XHTML-compliant file).
 
 Otherwise, you'll need to run it with the java interpreter, like this:
 
@@ -85,9 +115,14 @@ that you have fun!
 
 ## Contact Info
 
-Contributor      E-mail             Web
---------------   ----------------   ------------------------
-Eron Hennessey   eron@abstrys.com   <http://www.abstrys.com>
+<table width="90%">
+    <tr><th>Contributor</th><th>E-mail</th><th>Website</th></tr>
+    <tr>
+        <td>Eron Hennessey</td>
+        <td><a href="mailto:eron@abstrys.com">eron@abstrys.com</a></td>
+        <td><a href="http://www.abstrys.com">http://www.abstrys.com</a></td>
+    </tr>
+</table>
 
 [javadl]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
 [antdl]: http://ant.apache.org/bindownload.cgi
