@@ -74,7 +74,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       app_frame.setIconImage(icon_list.get(3));
 
       html_panel = new HTMLPanel(settings);
-      action_panel = new ActionPanel(settings);
+      action_panel = new ActionPanel(this);
 
       if (fpath == null)
       {

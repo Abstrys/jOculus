@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 
@@ -32,7 +33,8 @@ class HTMLPanel extends JPanel
 //      ep.setContentType("text/html");
       ep.setBorder(new EmptyBorder(10,10,10,10));
 
-      sp = new JScrollPane(ep);
+      sp = new FSScrollPane(ep);
+      sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
       sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       sp.setPreferredSize(s.window_size_default);
       sp.setMinimumSize(new Dimension(40, 40));

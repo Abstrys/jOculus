@@ -29,5 +29,11 @@ final class Strings
    protected static final String UI_RESET_LABEL = "Reset";
    protected static final String UI_SAVE_LABEL = "Save";
    protected static final String UI_USEDEFAULTS_LABEL = "Use Defaults";
+   protected static final String UI_TOOLBAR_OPEN_TIP = "Open a file";
+   protected static final String UI_TOOLBAR_EDIT_TIP = "Edit the displayed file";
+   protected static final String UI_TOOLBAR_REFRESH_TIP = "Refresh the display";
+   protected static final String UI_TOOLBAR_SETTINGS_TIP = "Modify settings";
+   protected static final String UI_TOOLBAR_ABOUT_TIP = "About " + APPNAME;
+   protected static final String UI_TOOLBAR_STYLE_TIP = "Change the style sheet";
 }
 
