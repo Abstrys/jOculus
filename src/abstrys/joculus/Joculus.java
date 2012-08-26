@@ -25,14 +25,13 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
    File cur_file = null;
    TextFileLoader cur_file_loader = null;
    String cur_html;
-   boolean file_is_html = false;
+   boolean markdown_failed;
    String file_contents;
    String file_pre = "";
    String file_ext = "";
    String base_url = ""; // the URL form of the file's parent directory.
    HTMLPanel html_panel = null;
    ActionPanel action_panel = null;
-   Timer file_timer_task = null;
    Settings settings;
 
    public Joculus()
@@ -139,23 +138,21 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
 
    public void refreshDisplay()
    {
+      if(markdown_failed)
+      {
+         new Thread(new MarkdownProcessor(cur_file, settings, this)).start();
+      }
+
       StringBuilder html_content = new StringBuilder();
-      final String xhtml_doc_start = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">";
-      final String xhtml_head_start = "<head>";
-      final String xhtml_head_end = "</head>";
-      final String xhtml_body_start = "<body>";
-      final String xhtml_body_end = "</body>";
-      final String xhtml_doc_end = "</html>";
 
       // invoke the processor to convert the file.
-      html_content.append(xhtml_doc_start);
-      html_content.append(xhtml_head_start);
+      html_content.append(Strings.XHTML_DECL);
+      html_content.append(Strings.XHTML_HEAD_BEGIN);
       // TODO: add the stylesheet here.
-      html_content.append(xhtml_head_end);
-      html_content.append(xhtml_body_start);
+      html_content.append(Strings.XHTML_HEAD_END);
+      html_content.append(Strings.XHTML_BODY_BEGIN);
       html_content.append(cur_html);
-      html_content.append(xhtml_body_end);
-      html_content.append(xhtml_doc_end);
+      html_content.append(Strings.XHTML_END);
 
       base_url = "file://" + cur_file.getAbsoluteFile().getParent() + "/";
 
@@ -256,12 +253,14 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
    public void xhtmlSuccess(String xhtml)
    {
       cur_html = xhtml;
+      markdown_failed = false;
       refreshDisplay();
    }
 
    @Override
    public void xhtmlFailure(String error_text)
    {
+      markdown_failed = true;
       showError(error_text);
    }
 }
