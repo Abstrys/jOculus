@@ -9,23 +9,24 @@ package abstrys.joculus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Image;
-import java.awt.List;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFile
+public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.XhtmlHandler
 {
    JFrame app_frame = null;
    File cur_file = null;
+   TextFileLoader cur_file_loader = null;
+   String cur_html;
    boolean file_is_html = false;
+   String file_contents;
    String file_pre = "";
    String file_ext = "";
    String base_url = ""; // the URL form of the file's parent directory.
@@ -36,7 +37,6 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
 
    public Joculus()
    {
-
    }
 
    public boolean init(String args[])
@@ -48,10 +48,13 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
 
       app_frame = new JFrame();
 
-            // set the application icon
-      final String[] icon_names = { "jOculus-icon-256.png", "jOculus-icon-128.png",
+      // set the application icon
+      final String[] icon_names =
+      {
+         "jOculus-icon-256.png", "jOculus-icon-128.png",
          "jOculus-icon-96.png", "jOculus-icon-64.png", "jOculus-icon-48.png",
-         "jOculus-icon-32.png", "jOculus-icon-16.png" };
+         "jOculus-icon-32.png", "jOculus-icon-16.png"
+      };
       ArrayList<BufferedImage> icon_list = new ArrayList<BufferedImage>();
       for (String icon : icon_names)
       {
@@ -65,7 +68,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
             showError(ex.getMessage());
          }
 
-         if(i != null)
+         if (i != null)
          {
             icon_list.add(i);
          }
@@ -78,7 +81,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
 
       if (fpath == null)
       {
-         JOptionPane.showMessageDialog(this, Strings.ERROR_NO_FILE_SPECIFIED, Strings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog(app_frame, Strings.ERROR_NO_FILE_SPECIFIED, Strings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
          return false;
       }
 
@@ -96,17 +99,37 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       cp.add(html_panel, BorderLayout.CENTER);
       cp.add(action_panel, BorderLayout.SOUTH);
 
-      app_frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
       app_frame.pack();
       app_frame.setVisible(true);
 
+      // handle window closing, passing execution to the onExit method.
+      app_frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+      app_frame.addWindowListener(new WindowAdapter()
+      {
+         @Override
+         public void windowClosing(WindowEvent e)
+         {
+            onExit();
+         }
+      });
       return true;
    }
 
    public void run()
    {
-      // load the file, and display it in the panel.
-      reloadFile();
+
+   }
+
+   private void onExit()
+   {
+      // if the user wants to save the window size on exit, do it.
+      if (settings.window_size_remember)
+      {
+         settings.window_size_default = html_panel.getSize();
+         settings.save();
+      }
+
+      System.exit(1);
    }
 
    Settings getSettings()
@@ -114,8 +137,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       return settings;
    }
 
-   @Override
-   public void reloadFile()
+   public void refreshDisplay()
    {
       StringBuilder html_content = new StringBuilder();
       final String xhtml_doc_start = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">";
@@ -125,82 +147,48 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
       final String xhtml_body_end = "</body>";
       final String xhtml_doc_end = "</html>";
 
-      if (file_is_html)
-      {
-         html_content.append(Utility.readStringFromFile(cur_file));
-      }
-      else
-      {
-         // invoke the processor to convert the file.
-         html_content.append(xhtml_doc_start);
-         html_content.append(xhtml_head_start);
-         // TODO: add the stylesheet here.
-         html_content.append(xhtml_head_end);
-         html_content.append(xhtml_body_start);
-         File f = new File(settings.md_processor_path);
-         if (!f.exists())
-         {
-            Joculus.showError(Strings.ERROR_INVALID_PROCESSOR_PATH);
-         }
-         else
-         {
-            html_content.append(Utility.processCmd(
-                    settings.md_processor_path + " "
-                    + settings.md_processor_opt + " " + cur_file.getPath()));
-         }
-         html_content.append(xhtml_body_end);
-         html_content.append(xhtml_doc_end);
+      // invoke the processor to convert the file.
+      html_content.append(xhtml_doc_start);
+      html_content.append(xhtml_head_start);
+      // TODO: add the stylesheet here.
+      html_content.append(xhtml_head_end);
+      html_content.append(xhtml_body_start);
+      html_content.append(cur_html);
+      html_content.append(xhtml_body_end);
+      html_content.append(xhtml_doc_end);
 
-         if (settings.display_word_count)
-         {
-            action_panel.setWordCount(Utility.countWordsInString(Utility.readStringFromFile(cur_file)));
-         }
-      }
+      base_url = "file://" + cur_file.getAbsoluteFile().getParent() + "/";
 
       html_panel.setHTML(html_content.toString(), base_url);
    }
 
    protected boolean setFile(String fpath)
    {
+      if(cur_file_loader != null)
+      {
+         cur_file_loader.die();
+         cur_file_loader = null;
+      }
+
       if (fpath == null)
       {
+         app_frame.setTitle(Strings.APPNAME + " - no file loaded");
          return false;
       }
-
-      // check to see if the file exists.
-      cur_file = new File(fpath);
-      if (!cur_file.exists())
-      {
-         JOptionPane.showMessageDialog(this, Strings.ERROR_BAD_FILEPATH);
-         return false;
-      }
-
-      // excellent. Set up a file notification monitor.
-      if (file_timer_task != null)
-      {
-         file_timer_task.cancel();
-      }
-
-      file_timer_task = new Timer();
-      file_timer_task.schedule(new FileModificationMonitor(cur_file, this), 1000, 1000);
 
       // grab the filename and extension while we're at it.
-      String[] parts = cur_file.getName().split("\\.(?=[^\\.]+$)");
+      String[] parts = fpath.split("\\.(?=[^\\.]+$)");
 
       file_pre = parts[0];
       file_ext = parts[1];
 
-      if (file_ext.matches("htm[l]"))
-      {
-         file_is_html = true;
-      }
-
       if (app_frame != null)
       {
-         app_frame.setTitle(Strings.APPNAME + " - " + cur_file.getName());
+         app_frame.setTitle(Strings.APPNAME + " - " + file_pre);
       }
 
-      base_url = "file://" + cur_file.getAbsoluteFile().getParent() + "/";
+      cur_file_loader = new TextFileLoader(fpath, this);
+      cur_file_loader.start();
 
       return true;
    }
@@ -211,7 +199,7 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
 
       if (app_instance.init(args))
       {
-         app_instance.run();
+      //   app_instance.run();
       }
    }
 
@@ -243,5 +231,37 @@ public class Joculus extends JFrame implements FileModificationMonitor.ReloadsFi
    public static void showError(String err_msg)
    {
       JOptionPane.showMessageDialog(null, err_msg, Strings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
+   }
+
+   // === === ===
+   // Handlers for the TextFileLoader
+   @Override
+   public void textFileLoaded(File file, int wc, String contents)
+   {
+      cur_file = file;
+      this.action_panel.setWordCount(wc);
+
+      new Thread(new MarkdownProcessor(file, settings, this)).start();
+   }
+
+   @Override
+   public void textFileFailed(String error_text)
+   {
+      showError(error_text);
+   }
+
+   // === === ===
+   // Handlers for the MarkdownProcessor
+   @Override
+   public void xhtmlSuccess(String xhtml)
+   {
+      cur_html = xhtml;
+      refreshDisplay();
+   }
+
+   @Override
+   public void xhtmlFailure(String error_text)
+   {
+      showError(error_text);
    }
 }

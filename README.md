@@ -1,6 +1,8 @@
-# <img src="http://www.abstrys.com/files/images/jOculus-logo-nobg-128.png" width="128" height="128" align="right"/> jOculus
+# <img src="http://www.abstrys.com/files/joculus/jOculus-logo-128.png" width="128" height="128" align="right"/> jOculus
 
 ## A cross-platform, auto-updating Markdown and HMTL viewer
+
+-----
 
 jOculus provides a formatted view of a [Markdown][md] or HTML document that is automatically updated every time the file is saved.
 

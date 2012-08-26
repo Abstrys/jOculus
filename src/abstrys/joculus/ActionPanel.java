@@ -28,24 +28,24 @@ final class ActionPanel extends JPanel
       setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
       JButton b;
-            
+
       b = new JButton(getToolbarIcon("refresh"));
       b.setToolTipText(Strings.UI_TOOLBAR_REFRESH_TIP);
       b.addActionListener(new ActionListener() {
          @Override public void actionPerformed(ActionEvent ae) {
-            app.reloadFile(); }});
+            app.refreshDisplay(); }});
       add(b);
-      
+
       b = new JButton(getToolbarIcon("open"));
       b.setToolTipText(Strings.UI_TOOLBAR_OPEN_TIP);
       // TODO: create a popup menu that displays the last 5 files opened, plus an option to open a new file.
       add(b);
-      
+
       b = new JButton(getToolbarIcon("edit"));
       b.setToolTipText(Strings.UI_TOOLBAR_EDIT_TIP);
       // TODO: open the configured editor -or- the editor that's specified by the EDITOR environment variable.
       add(b);
-      
+
       add(Box.createHorizontalGlue());
 
       label_wc = new JLabel();
@@ -59,17 +59,17 @@ final class ActionPanel extends JPanel
       b.setToolTipText(Strings.UI_TOOLBAR_STYLE_TIP);
       // TODO: pop up a menu with the currently configured stylesheets, and the option to manage stylesheets.
       add(b);
-      
+
       b = new JButton(getToolbarIcon("settings"));
       b.setToolTipText(Strings.UI_TOOLBAR_SETTINGS_TIP);
       b.addActionListener(new ActionListener() {
          @Override public void actionPerformed(ActionEvent ae) {
             ProcessorSettingsDlg d = new ProcessorSettingsDlg(app.settings);
-            app.reloadFile();
+            app.refreshDisplay();
          }
       });
       add(b);
-      
+
       b = new JButton(getToolbarIcon("about"));
       b.setToolTipText(Strings.UI_TOOLBAR_ABOUT_TIP);
       // TODO: open the about dialog.
@@ -80,7 +80,7 @@ final class ActionPanel extends JPanel
    {
        label_wc.setText(String.valueOf(wc) + " words");
    }
-   
+
    public ImageIcon getToolbarIcon(String name)
    {
       ImageIcon i = null;

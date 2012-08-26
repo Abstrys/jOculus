@@ -57,6 +57,19 @@ class Settings
       setDefaults();
    }
 
+   final void setDefaults()
+   {
+      action_panel_color = Color.darkGray;
+      display_word_count = true;
+      editor_path = "";
+      editor_use_env = true;
+      md_processor_name = "Pandoc";
+      md_processor_opt = "--to html";
+      md_processor_path = "/usr/local/bin/pandoc";
+      window_size_default = new Dimension(400, 500);
+      window_size_remember = true;
+   }
+   
    public boolean save()
    {      
       // make sure the settings directory exists!
@@ -176,26 +189,15 @@ class Settings
       md_processor_name = p.getProperty(MD_PROCESSOR_NAME_PROPERTY_NAME);
       md_processor_opt = p.getProperty(MD_PROCESSOR_OPT_PROPERTY_NAME);
       md_processor_path = p.getProperty(MD_PROCESSOR_PATH_PROPERTY_NAME);
-      Dimension d = new Dimension(Integer.parseInt(p.getProperty(WINDOW_SIZE_DEFAULT_W_PROPERTY_NAME)), Integer.parseInt(p.getProperty(WINDOW_SIZE_DEFAULT_H_PROPERTY_NAME)));
+      Dimension d = new Dimension(
+              Integer.parseInt(p.getProperty(WINDOW_SIZE_DEFAULT_W_PROPERTY_NAME)),
+              Integer.parseInt(p.getProperty(WINDOW_SIZE_DEFAULT_H_PROPERTY_NAME)));
       window_size_default = d;
       window_size_remember = (Integer.parseInt(p.getProperty(WINDOW_SIZE_REMEMBER_PROPERTY_NAME)) == 1);
 
       return true;
    }
 
-   final void setDefaults()
-   {
-      action_panel_color = Color.darkGray;
-      display_word_count = true;
-      editor_path = "";
-      editor_use_env = true;
-      md_processor_name = "Pandoc";
-      md_processor_opt = "--to html";
-      md_processor_path = "/usr/local/bin/pandoc";
-      window_size_default = new Dimension(400, 500);
-      window_size_remember = true;
-   }
-   
    public static String getSettingsPath()
    {
       final String SETTINGS_DIR = ".jOculus";      
