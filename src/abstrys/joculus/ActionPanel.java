@@ -10,6 +10,8 @@ package abstrys.joculus;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -57,21 +59,7 @@ final class ActionPanel extends JPanel
          @Override
          public void actionPerformed(ActionEvent ae)
          {
-            JFileChooser fc = new JFileChooser();
-            fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fc.setDialogTitle(Strings.UI_OPEN_MDFILE_LABEL);
-            fc.addChoosableFileFilter(new FileNameExtensionFilter(
-                    "Markdown files (.md, .mmd, .markdown, .txt, .text)", "md", "mmd", "markdown", "txt", "text"));
-            int returnVal = fc.showOpenDialog(app.app_frame);
-
-            if (returnVal == JFileChooser.APPROVE_OPTION)
-            {
-               File file = fc.getSelectedFile();
-               if (file.exists() && file.isFile())
-               {
-                  app.setFile(file.getAbsolutePath());
-               }
-            }
+            actionOpenFile(app);
          }
       });
       add(b);
@@ -84,47 +72,7 @@ final class ActionPanel extends JPanel
          @Override
          public void actionPerformed(ActionEvent ae)
          {
-            // use the environment?
-            if (!app.settings.editor_use_env)
-            {
-               // use the user-specified editor (if it was specified).
-               File f = new File(app.settings.editor_path);
-               if (!f.exists() || !f.canExecute())
-               {
-                  app.showError(Strings.ERROR_NO_TEXT_EDITOR);
-                  return;
-               }
-               else
-               {
-                  if(app.os_type == Joculus.OSType.OS_MacOSX)
-                  {
-                     String[] cmdarray = new String[] {
-                        "/usr/bin/open", "-a" , app.settings.editor_path , app.cur_file.getAbsolutePath()
-                     };
-                     try
-                     {
-                        Runtime.getRuntime().exec(cmdarray);
-                     }
-                     catch (IOException ex)
-                     {
-                        app.showError(ex.getMessage());
-                     }
-                  }
-               }
-            }
-            else if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.EDIT))
-            {
-               // try using the system-defined editor to edit the file.
-               try
-               {
-                  Desktop.getDesktop().edit(app.cur_file);
-               }
-               catch (IOException exc)
-               {
-                  app.showError(exc.getMessage());
-               }
-            }
-
+            actionEditFile(app);
          }
       });
       // TODO: open the configured editor -or- the editor that's specified by the EDITOR environment variable.
@@ -176,6 +124,70 @@ final class ActionPanel extends JPanel
    public void setWordCount(int wc)
    {
       label_wc.setText(String.valueOf(wc) + " words");
+   }
+
+   public void actionEditFile(Joculus app)
+   {
+      // use the environment?
+      if (!app.settings.editor_use_env)
+      {
+         // use the user-specified editor (if it was specified).
+         File f = new File(app.settings.editor_path);
+         if (!f.exists() || !f.canExecute())
+         {
+            app.showError(Strings.ERROR_NO_TEXT_EDITOR);
+            return;
+         }
+         else
+         {
+            if (app.os_type == Joculus.OSType.OS_MacOSX)
+            {
+               String[] cmdarray = new String[]
+               {
+                  "/usr/bin/open", "-a", app.settings.editor_path, app.cur_file.getAbsolutePath()
+               };
+               try
+               {
+                  Runtime.getRuntime().exec(cmdarray);
+               }
+               catch (IOException ex)
+               {
+                  app.showError(ex.getMessage());
+               }
+            }
+         }
+      }
+      else if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.EDIT))
+      {
+         // try using the system-defined editor to edit the file.
+         try
+         {
+            Desktop.getDesktop().edit(app.cur_file);
+         }
+         catch (IOException exc)
+         {
+            app.showError(exc.getMessage());
+         }
+      }
+   }
+
+   public void actionOpenFile(Joculus app)
+   {
+      JFileChooser fc = new JFileChooser();
+      fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+      fc.setDialogTitle(Strings.UI_OPEN_MDFILE_LABEL);
+      fc.addChoosableFileFilter(new FileNameExtensionFilter(
+              "Markdown files (.md, .mmd, .markdown, .txt, .text)", "md", "mmd", "markdown", "txt", "text"));
+      int returnVal = fc.showOpenDialog(app.app_frame);
+
+      if (returnVal == JFileChooser.APPROVE_OPTION)
+      {
+         File file = fc.getSelectedFile();
+         if (file.exists() && file.isFile())
+         {
+            app.setFile(file.getAbsolutePath());
+         }
+      }
    }
 
    public ImageIcon getToolbarIcon(String name, ActionPanel actionPanel)

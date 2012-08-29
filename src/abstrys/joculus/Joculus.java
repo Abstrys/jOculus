@@ -9,6 +9,8 @@ package abstrys.joculus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -22,7 +24,7 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
 {
    enum OSType { OS_Unix, OS_MacOSX, OS_Windows, Unknown };
    OSType os_type;
-
+   Joculus app_instance;
    JFrame app_frame = null;
    File cur_file = null;
    TextFileLoader cur_file_loader = null;
@@ -43,6 +45,7 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
 
    public boolean init(String args[])
    {
+      app_instance = this;
       settings = new Settings();
       settings.load();
 
@@ -114,6 +117,35 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
          public void windowClosing(WindowEvent e)
          {
             onExit();
+         }
+      });
+
+      app_frame.addKeyListener(new KeyListener() {
+
+         @Override
+         public void keyTyped(KeyEvent ke)
+         {
+         }
+
+         @Override
+         public void keyPressed(KeyEvent ke)
+         {
+            if(ke.getModifiers() == java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())
+            {
+               if(ke.getKeyCode() == KeyEvent.VK_O)
+               {
+                  action_panel.actionOpenFile(app_instance);
+               }
+               else if(ke.getKeyCode() == KeyEvent.VK_E)
+               {
+                  action_panel.actionEditFile(app_instance);
+               }
+            }
+         }
+
+         @Override
+         public void keyReleased(KeyEvent ke)
+         {
          }
       });
       return true;
