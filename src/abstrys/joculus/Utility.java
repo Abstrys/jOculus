@@ -7,6 +7,9 @@
  */
 package abstrys.joculus;
 
+import java.io.File;
+import javax.swing.filechooser.FileFilter;
+
 /**
  *
  * @author eron
@@ -23,5 +26,22 @@ public class Utility
       }
 
       return home;
+   }
+   
+   public static FileFilter getExecutableFileFilter()
+   {
+      return (new FileFilter() {
+         @Override
+         public boolean accept(File file)
+         {
+            return file.canExecute();
+         }
+
+         @Override
+         public String getDescription()
+         {
+            return Strings.EXECUTABLE_FILES;
+         }
+      });
    }
 }

@@ -15,12 +15,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Timer;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.XhtmlHandler
 {
+   enum OSType { OS_Unix, OS_MacOSX, OS_Windows, Unknown };
+   OSType os_type;
+
    JFrame app_frame = null;
    File cur_file = null;
    TextFileLoader cur_file_loader = null;
@@ -34,6 +36,7 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
    ActionPanel action_panel = null;
    Settings settings;
 
+
    public Joculus()
    {
    }
@@ -46,6 +49,8 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
       String fpath = parseArgs(args);
 
       app_frame = new JFrame();
+
+      os_type = getOSType();
 
       // set the application icon
       final String[] icon_names =
@@ -223,6 +228,27 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
       }
 
       return fpath;
+   }
+
+   private OSType getOSType()
+   {
+      String os_name = System.getProperty("os.name").toLowerCase();
+      if(os_name.contains("mac"))
+      {
+         return OSType.OS_MacOSX;
+      }
+      else if(os_name.contains("nix") || os_name.contains("nux"))
+      {
+         return OSType.OS_Unix;
+      }
+      else if(os_name.contains("win"))
+      {
+         return OSType.OS_Windows;
+      }
+      else
+      {
+         return OSType.Unknown;
+      }
    }
 
    public static void showError(String err_msg)
