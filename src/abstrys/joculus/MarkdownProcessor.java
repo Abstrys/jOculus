@@ -32,7 +32,7 @@ public class MarkdownProcessor implements Runnable
        */
       public void xhtmlFailure(String error_text);
    }
-   
+
    File markdown_file;
    XhtmlHandler mp_handler;
    Settings settings;
@@ -42,11 +42,11 @@ public class MarkdownProcessor implements Runnable
     *
     * @param s the text to process
     */
-   public MarkdownProcessor(File f, Settings settings, XhtmlHandler handler)
+   public MarkdownProcessor(File f, XhtmlHandler handler)
    {
       markdown_file = f;
       mp_handler = handler;
-      this.settings = settings;
+      this.settings = Joculus.settings;
    }
 
    @Override
@@ -64,6 +64,10 @@ public class MarkdownProcessor implements Runnable
     */
    private void processFile()
    {
+      if(settings.cur_processor != null)
+      {
+         processFileExternal();
+      }
    }
 
    /**
@@ -74,7 +78,9 @@ public class MarkdownProcessor implements Runnable
       String output_str = "";
       Process cmd_proc;
 
-      final String cmdline = settings.md_processor_path + " " + settings.md_processor_opt + " " + markdown_file.getAbsolutePath();
+      final String cmdline = settings.cur_processor.path + " "
+              + settings.cur_processor.options + " "
+              + markdown_file.getAbsolutePath();
 
       try
       {
@@ -83,7 +89,7 @@ public class MarkdownProcessor implements Runnable
       catch (IOException exc)
       {
          mp_handler.xhtmlFailure(exc.getMessage());
-         return "<p>Error: " + Strings.ERROR_INVALID_PROCESSOR_PATH + "</p>";
+         return "<p>Error: " + UIStrings.ERROR_INVALID_PROCESSOR_PATH + "</p>";
       }
 
       if (cmd_proc != null)
@@ -127,7 +133,7 @@ public class MarkdownProcessor implements Runnable
       }
       catch (java.io.IOException exc)
       {
-         JOptionPane.showMessageDialog(null, "Error: " + exc.getMessage(), Strings.APPNAME, JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog(null, "Error: " + exc.getMessage(), UIStrings.APPNAME, JOptionPane.ERROR_MESSAGE);
       }
 
       return sb.toString();

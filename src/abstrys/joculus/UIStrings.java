@@ -7,7 +7,7 @@
  */
 package abstrys.joculus;
 
-final class Strings
+final class UIStrings
 {
    protected static final String APPNAME = "jOculus";
    protected static final String VERSION = "Version 0.2";
@@ -18,8 +18,8 @@ final class Strings
    protected static final String ERROR_NO_FILE_SPECIFIED = "No file specified!";
    protected static final String ERROR_NO_HOME = "Could not find your home directory!";
    protected static final String ERROR_OPENSTREAM_FAILED = "Could not open file stream.";
-   protected static final String ERROR_WRITE_SETTINGS_FAILED = "Could not write settings to file.";
-   protected static final String ERROR_READ_SETTINGS_FAILED = "Could not read settings from file.";
+   protected static final String ERROR_WRITE_SETTINGS_FAILED = "Could not write settings.";
+   protected static final String ERROR_READ_SETTINGS_FAILED = "Could not read settings.";
    protected static final String ERROR_INVALID_HEX_COLOR = "Invalid hexadecimal color value";
    protected static final String ERROR_INVALID_PROCESSOR_PATH = "Invalid processor path. Make sure you have a valid processor path specified in your settings.";
    protected static final String ERROR_INVALID_PATH = "Invalid path";
@@ -35,6 +35,9 @@ final class Strings
 
    protected static final String SETTINGS_DIALOG_MARKDOWN_PROCESSOR_TITLE = "Markdown Processor";
    protected static final String SETTINGS_DIALOG_MARKDOWN_PROCESSOR_BROWSE_TOOLTIP = "Browse the file system for a Markdown processor";
+   protected static final String SETTINGS_DIALOG_MARKDOWN_PROCESSOR_ADD = "Add this Markdown processor.";
+   protected static final String SETTINGS_DIALOG_MARKDOWN_PROCESSOR_REMOVE = "Delete this Markdown processor.";
+   protected static final String[] SETTINGS_DIALOG_DEFAULT_NEW_PROC_VALUES = { "New processor", "path/to/processor", "--options"};
 
    protected static final String SETTINGS_DIALOG_CSS_TITLE = "Style Sheets";
    protected static final String SETTINGS_DIALOG_CSS_BROWSE_TOOLTIP = "Browse the file system for a CSS file";
@@ -53,6 +56,7 @@ final class Strings
    protected static final String UI_TOOLBAR_ABOUT_TIP = "About " + APPNAME;
    protected static final String UI_TOOLBAR_STYLE_TIP = "Change the style sheet";
    protected static final String UI_OPEN_MDFILE_LABEL = "Choose a Markdown file to open";
+   protected static final String UI_OPEN_EDITOR_LABEL = "Choose a text editor for your Markdown files";
 
    protected static final String XHTML_DECL = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">";
    protected static final String XHTML_HEAD_BEGIN = "<head>";
@@ -66,5 +70,6 @@ final class Strings
    protected static final String ABOUT_INCLUDES = "<p>Includes HTML rendering technology from the <a href=\"https://github.com/flyingsaucerproject/flyingsaucer\">Flying Saucer</a> project.</p>";
    protected static final String ABOUT_MOREINFO = "<p>For more information about jOculus or for software updates, visit:</p> <p><a href=\"https://github.com/Abstrys/jOculus\">https://github.com/Abstrys/jOculus</a></p>";
    protected static final String EXECUTABLE_FILES = "Executable files";
+
 }
 

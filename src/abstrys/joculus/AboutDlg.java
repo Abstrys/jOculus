@@ -30,19 +30,19 @@ public class AboutDlg extends JDialog
       StringBuilder html_content = new StringBuilder();
 
       // invoke the processor to convert the file.
-      html_content.append(Strings.XHTML_DECL);
-      html_content.append(Strings.XHTML_HEAD_BEGIN);
+      html_content.append(UIStrings.XHTML_DECL);
+      html_content.append(UIStrings.XHTML_HEAD_BEGIN);
       // TODO: add the stylesheet here.
-      html_content.append(Strings.XHTML_HEAD_END);
-      html_content.append(Strings.XHTML_BODY_BEGIN);
-      html_content.append("<h1>" + Strings.APPNAME + "</h1>");
-      html_content.append(Strings.ABOUT_TAGLINE);
-      html_content.append("<p>" + Strings.VERSION + "</p>");
-      html_content.append(Strings.ABOUT_COPYRIGHT);
-      html_content.append(Strings.ABOUT_WRITTEN_BY);
-      html_content.append(Strings.ABOUT_INCLUDES);
-      html_content.append(Strings.ABOUT_MOREINFO);
-      html_content.append(Strings.XHTML_END);
+      html_content.append(UIStrings.XHTML_HEAD_END);
+      html_content.append(UIStrings.XHTML_BODY_BEGIN);
+      html_content.append("<h1>" + UIStrings.APPNAME + "</h1>");
+      html_content.append(UIStrings.ABOUT_TAGLINE);
+      html_content.append("<p>" + UIStrings.VERSION + "</p>");
+      html_content.append(UIStrings.ABOUT_COPYRIGHT);
+      html_content.append(UIStrings.ABOUT_WRITTEN_BY);
+      html_content.append(UIStrings.ABOUT_INCLUDES);
+      html_content.append(UIStrings.ABOUT_MOREINFO);
+      html_content.append(UIStrings.XHTML_END);
 
       FSScrollPane sp = new FSScrollPane(xp);
       sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -61,7 +61,7 @@ public class AboutDlg extends JDialog
          @Override public void actionPerformed(ActionEvent ae) {
             closeAbout(); } } );
       btnPanel.add(b);
-      this.setTitle(Strings.UI_TOOLBAR_ABOUT_TIP);
+      this.setTitle(UIStrings.UI_TOOLBAR_ABOUT_TIP);
       this.add(btnPanel, BorderLayout.SOUTH);
       this.pack();
       this.setVisible(true);

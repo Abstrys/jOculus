@@ -7,6 +7,7 @@
  */
 package abstrys.joculus;
 
+import abstrys.joculus.Settings.ExternalProcessor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,22 +20,26 @@ import javax.swing.border.EmptyBorder;
 /**
  * A panel to set the processor settings.
  *
- * @author eronh
+ * @author Eron Hennessey <eron@abstrys.com>
  */
 class SettingsDlg extends JDialog
 {
-   JTextField processor_name_field;
+   JComboBox processor_name_selector;
    JTextField processor_path_field;
    JTextField processor_options_field;
    JTextField editor_path_field;
    JCheckBox editor_use_env_checkbox;
-   Settings app_settings;
    EmptyBorder default_border;
    ImageIcon folder_icon;
+   Settings dialog_settings;
 
-   public SettingsDlg(Settings settings)
+   public SettingsDlg()
    {
-      app_settings = settings;
+      // read the settings from the preferences, or use defaults.
+      dialog_settings = new Settings();
+      dialog_settings.load();
+
+      // set up the dialog.
       this.setLayout(new BorderLayout());
       default_border = new EmptyBorder(10, 20, 10, 20);
       JTabbedPane tab_pane = new JTabbedPane();
@@ -42,23 +47,24 @@ class SettingsDlg extends JDialog
       // get the folder icon to use for the browse buttons.
       try
       {
-         folder_icon = new ImageIcon(ImageIO.read(this.getClass().getClassLoader().getResource("abstrys/joculus/res/toolbar/open.png")));
+         folder_icon = new ImageIcon(
+            ImageIO.read(this.getClass().getClassLoader().getResource("abstrys/joculus/res/toolbar/open.png")));
       }
       catch (IOException ex)
       {
          Joculus.showError(ex.getMessage());
       }
 
-      tab_pane.addTab(Strings.SETTINGS_DIALOG_GENERAL_TITLE, createGeneralSettingsPanel());
-      tab_pane.addTab(Strings.SETTINGS_DIALOG_CSS_TITLE, createCSSSettingsPanel());
-      tab_pane.addTab(Strings.SETTINGS_DIALOG_MARKDOWN_PROCESSOR_TITLE, createProcessorSettingsPanel());
+      tab_pane.addTab(UIStrings.SETTINGS_DIALOG_GENERAL_TITLE, createGeneralSettingsPanel());
+      tab_pane.addTab(UIStrings.SETTINGS_DIALOG_CSS_TITLE, createCSSSettingsPanel());
+      tab_pane.addTab(UIStrings.SETTINGS_DIALOG_MARKDOWN_PROCESSOR_TITLE, createProcessorSettingsPanel());
 
       this.add(tab_pane, BorderLayout.CENTER);
       add(createButtonsPanel(), BorderLayout.SOUTH);
       this.pack();
       this.setVisible(true);
       this.setResizable(false);
-      this.setTitle(Strings.SETTINGS_DIALOG_TITLE);
+      this.setTitle(UIStrings.SETTINGS_DIALOG_TITLE);
    }
 
    private JPanel createGeneralSettingsPanel()
@@ -70,10 +76,10 @@ class SettingsDlg extends JDialog
 
       JPanel ip; // inner panel used for layout.
 
-     editor_use_env_checkbox = new JCheckBox(Strings.SETTINGS_DIALOG_EDITOR_USE_ENV, !app_settings.editor_use_env);
+     editor_use_env_checkbox = new JCheckBox(UIStrings.SETTINGS_DIALOG_EDITOR_USE_ENV, !dialog_settings.editor_use_env);
      final JButton browse_button = new JButton(folder_icon);
-     editor_use_env_checkbox.addActionListener(new ActionListener() {
-
+     editor_use_env_checkbox.addActionListener(new ActionListener()
+     {
          @Override
          public void actionPerformed(ActionEvent ae)
          {
@@ -84,11 +90,11 @@ class SettingsDlg extends JDialog
       jp.add(editor_use_env_checkbox);
 
       ip = new JPanel();
-      ip.add(new JLabel(Strings.SETTINGS_DIALOG_EDITOR_PATH_LABEL));
+      ip.add(new JLabel(UIStrings.SETTINGS_DIALOG_EDITOR_PATH_LABEL));
       editor_path_field = new JTextField(18);
-      editor_path_field.setText(app_settings.editor_path);
+      editor_path_field.setText(dialog_settings.editor_path);
       ip.add(editor_path_field);
-      browse_button.setToolTipText(Strings.SETTINGS_DIALOG_EDITOR_BROWSE_TOOLTIP);
+      browse_button.setToolTipText(UIStrings.SETTINGS_DIALOG_EDITOR_BROWSE_TOOLTIP);
       browse_button.addActionListener(new ActionListener()
       {
          @Override
@@ -96,7 +102,7 @@ class SettingsDlg extends JDialog
          {
             JFileChooser fc = new JFileChooser();
             fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            fc.setDialogTitle(Strings.UI_OPEN_MDFILE_LABEL);
+            fc.setDialogTitle(UIStrings.UI_OPEN_EDITOR_LABEL);
             fc.setFileFilter(Utility.getExecutableFileFilter());
             int returnVal = fc.showOpenDialog(null);
 
@@ -123,33 +129,84 @@ class SettingsDlg extends JDialog
 
    private JPanel createProcessorSettingsPanel()
    {
-      JPanel jp = new JPanel();
+      final JPanel jp = new JPanel();
       jp.setBorder(default_border);
       BoxLayout bl = new BoxLayout(jp, BoxLayout.PAGE_AXIS);
-
       jp.setLayout(bl);
 
-      JComponent cp = new JLabel(Strings.UI_PROC_NAME_LABEL);
+      JComponent cp = new JLabel(UIStrings.UI_PROC_NAME_LABEL);
       setItemAlignment(cp);
       jp.add(cp);
 
-      JPanel ip = new JPanel(new FlowLayout(FlowLayout.LEFT));
-      processor_name_field = new JTextField(18);
-      ip.add(processor_name_field);
+      JPanel ip = new JPanel();
+      bl = new BoxLayout(ip, BoxLayout.LINE_AXIS);
+      processor_name_selector = new JComboBox();
+      processor_name_selector.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent ae)
+         {
+            ExternalProcessor ep = (ExternalProcessor)processor_name_selector.getSelectedItem();
+            processor_path_field.setText(ep.path);
+            processor_options_field.setText(ep.options);
+         }
+      });
+      Dimension d = processor_name_selector.getPreferredSize();
+      d.width = 160;
+      processor_name_selector.setPreferredSize(d);
+      processor_name_selector.setEditable(true);
+      ip.add(processor_name_selector);
+
+      JButton b = new JButton("+");
+      b.setToolTipText(UIStrings.SETTINGS_DIALOG_MARKDOWN_PROCESSOR_ADD);
+      b.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent ae)
+         {
+            ExternalProcessor new_ep = dialog_settings.newProcessor(UIStrings.SETTINGS_DIALOG_DEFAULT_NEW_PROC_VALUES[0]);
+            new_ep.path = UIStrings.SETTINGS_DIALOG_DEFAULT_NEW_PROC_VALUES[1];
+            new_ep.options = UIStrings.SETTINGS_DIALOG_DEFAULT_NEW_PROC_VALUES[2];
+            processor_name_selector.addItem(new_ep);
+            processor_name_selector.setSelectedItem(new_ep);
+         }
+      });
+      d = b.getPreferredSize();
+      d.width = 20;
+      b.setPreferredSize(d);
+      ip.add(b);
+
+      b = new JButton("-");
+      b.setToolTipText(UIStrings.SETTINGS_DIALOG_MARKDOWN_PROCESSOR_REMOVE);
+      b.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent ae)
+         {
+            ExternalProcessor ep = (ExternalProcessor)processor_name_selector.getSelectedItem();
+            int result = JOptionPane.showConfirmDialog(jp, "Remove Processor: " + ep.name + "?", UIStrings.APPNAME, JOptionPane.YES_NO_OPTION);
+            if(result == JOptionPane.NO_OPTION)
+            {
+               return;
+            }
+            processor_name_selector.removeItem(ep);
+            processor_name_selector.setSelectedIndex(0);
+         }
+      });
+      b.setPreferredSize(d);
+      ip.add(b);
+      ip.add(Box.createHorizontalGlue());
       setItemAlignment(ip);
       jp.add(ip);
 
       jp.add(Box.createVerticalStrut(10));
 
-      cp = new JLabel(Strings.UI_PROC_PATH_LABEL);
+      cp = new JLabel(UIStrings.UI_PROC_PATH_LABEL);
       setItemAlignment(cp);
       jp.add(cp);
 
       ip = new JPanel(new FlowLayout(FlowLayout.LEFT));
       processor_path_field = new JTextField(40);
       ip.add(processor_path_field);
-      JButton b = new JButton(folder_icon);
-      b.setToolTipText(Strings.SETTINGS_DIALOG_MARKDOWN_PROCESSOR_BROWSE_TOOLTIP);
+      b = new JButton(folder_icon);
+      b.setToolTipText(UIStrings.SETTINGS_DIALOG_MARKDOWN_PROCESSOR_BROWSE_TOOLTIP);
       b.addActionListener(new ActionListener()
       {
          @Override
@@ -168,7 +225,7 @@ class SettingsDlg extends JDialog
                else
                {
                   processor_path_field.setForeground(Color.RED);
-                  processor_path_field.setText(file.getAbsolutePath() + " [" + Strings.ERROR_INVALID_PATH + "]");
+                  processor_path_field.setText(file.getAbsolutePath() + " [" + UIStrings.ERROR_INVALID_PATH + "]");
                }
                processor_path_field.setText(file.getAbsolutePath());
             }
@@ -183,7 +240,7 @@ class SettingsDlg extends JDialog
 
       jp.add(Box.createVerticalStrut(10));
 
-      cp = new JLabel(Strings.UI_PROC_OPTIONS_LABEL);
+      cp = new JLabel(UIStrings.UI_PROC_OPTIONS_LABEL);
       setItemAlignment(cp);
       jp.add(cp);
 
@@ -193,7 +250,7 @@ class SettingsDlg extends JDialog
       setItemAlignment(ip);
       jp.add(ip);
 
-      reset(app_settings);
+      reset();
 
       return jp;
    }
@@ -211,7 +268,7 @@ class SettingsDlg extends JDialog
       jp.setBorder(new EmptyBorder(5,10,10,10));
       JButton b;
 
-      b = new JButton(Strings.UI_SAVE_LABEL);
+      b = new JButton(UIStrings.UI_SAVE_LABEL);
       b.addActionListener(new ActionListener()
       {
          @Override
@@ -222,7 +279,7 @@ class SettingsDlg extends JDialog
       });
       jp.add(b);
 
-      b = new JButton(Strings.UI_CANCEL_LABEL);
+      b = new JButton(UIStrings.UI_CANCEL_LABEL);
       b.addActionListener(new ActionListener()
       {
          @Override
@@ -233,18 +290,18 @@ class SettingsDlg extends JDialog
       });
       jp.add(b);
 
-      b = new JButton(Strings.UI_RESET_LABEL);
+      b = new JButton(UIStrings.UI_RESET_LABEL);
       b.addActionListener(new ActionListener()
       {
          @Override
          public void actionPerformed(ActionEvent ae)
          {
-            reset(app_settings);
+            reset();
          }
       });
       jp.add(b);
 
-      b = new JButton(Strings.UI_USEDEFAULTS_LABEL);
+      b = new JButton(UIStrings.UI_USEDEFAULTS_LABEL);
       b.addActionListener(new ActionListener()
       {
          @Override
@@ -259,13 +316,20 @@ class SettingsDlg extends JDialog
 
    private void saveSettings()
    {
-      app_settings.md_processor_name = processor_name_field.getText();
-      app_settings.md_processor_path = processor_path_field.getText();
-      app_settings.md_processor_opt = processor_options_field.getText();
-      app_settings.editor_use_env = editor_use_env_checkbox.isSelected();
-      app_settings.editor_path = editor_path_field.getText();
+      dialog_settings.md_processors.clear();
+      final int x = processor_name_selector.getItemCount();
+      for(int i = 0; i < x; i++)
+      {
+         ExternalProcessor ep = (ExternalProcessor)processor_name_selector.getItemAt(i);
+         dialog_settings.md_processors.add(ep);
+      }
+      dialog_settings.cur_processor = (ExternalProcessor)processor_name_selector.getSelectedItem();
 
-      app_settings.save();
+      dialog_settings.editor_use_env = editor_use_env_checkbox.isSelected();
+      dialog_settings.editor_path = editor_path_field.getText();
+
+      Joculus.settings = dialog_settings;
+      Joculus.settings.save();
       this.dispose();
    }
 
@@ -275,20 +339,31 @@ class SettingsDlg extends JDialog
    }
 
    /*
-    * Reset all fields to the values in the passed-in Settings.
+    * Reset the dialog fields to the currently-stored values.
     */
-   private void reset(Settings s)
+   private void reset()
    {
-      processor_name_field.setText(s.md_processor_name);
-      processor_path_field.setText(s.md_processor_path);
-      processor_options_field.setText(s.md_processor_opt);
+      processor_name_selector.removeAllItems();
+      for(Settings.ExternalProcessor ep : dialog_settings.md_processors)
+      {
+         processor_name_selector.addItem(ep);
+      }
+      processor_name_selector.setSelectedItem(dialog_settings.cur_processor);
+
+      processor_path_field.setText(dialog_settings.cur_processor.path);
+      processor_options_field.setText(dialog_settings.cur_processor.options);
+
+      editor_path_field.setText(dialog_settings.editor_path);
+      if(editor_use_env_checkbox.isSelected() != dialog_settings.editor_use_env)
+      {
+         editor_use_env_checkbox.doClick();
+      }
    }
 
    private void setDefaults()
    {
-      // create a new instance of the Settings class to get the default values.
-      Settings s = new Settings();
-      reset(s);
+      dialog_settings = new Settings();
+      reset();
    }
 
 }

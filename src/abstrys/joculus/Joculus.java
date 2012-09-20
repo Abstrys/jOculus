@@ -9,23 +9,20 @@ package abstrys.joculus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.XhtmlHandler
 {
    enum OSType { OS_Unix, OS_MacOSX, OS_Windows, Unknown };
-   OSType os_type;
+   static OSType os_type;
+   static Settings settings;
+   static JFrame frame = null;
+
    Joculus app_instance;
-   JFrame app_frame = null;
    File cur_file = null;
    TextFileLoader cur_file_loader = null;
    String cur_html;
@@ -36,8 +33,6 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
    String base_url = ""; // the URL form of the file's parent directory.
    HTMLPanel html_panel = null;
    ActionPanel action_panel = null;
-   Settings settings;
-
 
    public Joculus()
    {
@@ -46,15 +41,14 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
    public boolean init(String args[])
    {
       app_instance = this;
+      String fpath = parseArgs(args);
+      frame = new JFrame();
+
+      // get the static parameters
+      os_type = getOSType();
       settings = new Settings();
       settings.load();
-
-      String fpath = parseArgs(args);
-
-      app_frame = new JFrame();
-
-      os_type = getOSType();
-
+/*
       // set the application icon
       final String[] icon_names =
       {
@@ -81,14 +75,22 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
          }
       }
 
-      app_frame.setIconImage(icon_list.get(3));
+      frame.setIconImage(icon_list.get(3));
+*/
 
-      html_panel = new HTMLPanel(settings);
+      // Create the HTMLPanel, using the last saved window size (if available) to set the size.
+      // Otherwise, use the default minimum size.
+      Dimension window_size = new Dimension();
+      html_panel = new HTMLPanel(settings.window_size_last);
+
+      // Create the action panel.
       action_panel = new ActionPanel(this);
 
       if (fpath == null)
       {
-         JOptionPane.showMessageDialog(app_frame, Strings.ERROR_NO_FILE_SPECIFIED, Strings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog(
+                 frame, UIStrings.ERROR_NO_FILE_SPECIFIED,
+                 UIStrings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
          return false;
       }
 
@@ -100,18 +102,18 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
 
       // Set up the application frame.
 
-      Container cp = app_frame.getContentPane();
+      Container cp = frame.getContentPane();
       cp.setLayout(new BorderLayout());
 
       cp.add(html_panel, BorderLayout.CENTER);
       cp.add(action_panel, BorderLayout.SOUTH);
 
-      app_frame.pack();
-      app_frame.setVisible(true);
+      frame.pack();
+      frame.setVisible(true);
 
       // handle window closing, passing execution to the onExit method.
-      app_frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-      app_frame.addWindowListener(new WindowAdapter()
+      frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+      frame.addWindowListener(new WindowAdapter()
       {
          @Override
          public void windowClosing(WindowEvent e)
@@ -120,7 +122,8 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
          }
       });
 
-      app_frame.addKeyListener(new KeyListener() {
+/*
+      frame.addKeyListener(new KeyListener() {
 
          @Override
          public void keyTyped(KeyEvent ke)
@@ -147,7 +150,7 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
          public void keyReleased(KeyEvent ke)
          {
          }
-      });
+      });*/
       return true;
    }
 
@@ -161,35 +164,25 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
       // if the user wants to save the window size on exit, do it.
       if (settings.window_size_remember)
       {
-         settings.window_size_default = html_panel.getSize();
-         settings.save();
+         settings.window_size_last = html_panel.getSize();
+         settings.saveWindowSize();
       }
 
       System.exit(1);
    }
 
-   Settings getSettings()
-   {
-      return settings;
-   }
-
    public void refreshDisplay()
    {
-      if(markdown_failed)
-      {
-         new Thread(new MarkdownProcessor(cur_file, settings, this)).start();
-      }
-
       StringBuilder html_content = new StringBuilder();
 
       // invoke the processor to convert the file.
-      html_content.append(Strings.XHTML_DECL);
-      html_content.append(Strings.XHTML_HEAD_BEGIN);
+      html_content.append(UIStrings.XHTML_DECL);
+      html_content.append(UIStrings.XHTML_HEAD_BEGIN);
       // TODO: add the stylesheet here.
-      html_content.append(Strings.XHTML_HEAD_END);
-      html_content.append(Strings.XHTML_BODY_BEGIN);
+      html_content.append(UIStrings.XHTML_HEAD_END);
+      html_content.append(UIStrings.XHTML_BODY_BEGIN);
       html_content.append(cur_html);
-      html_content.append(Strings.XHTML_END);
+      html_content.append(UIStrings.XHTML_END);
 
       base_url = "file://" + cur_file.getAbsoluteFile().getParent() + "/";
 
@@ -206,7 +199,7 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
 
       if (fpath == null)
       {
-         app_frame.setTitle(Strings.APPNAME + " - no file loaded");
+         frame.setTitle(UIStrings.APPNAME + " - no file loaded");
          return false;
       }
 
@@ -216,9 +209,9 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
       file_pre = parts[0];
       file_ext = parts[1];
 
-      if (app_frame != null)
+      if (frame != null)
       {
-         app_frame.setTitle(Strings.APPNAME + " - " + file_pre);
+         frame.setTitle(UIStrings.APPNAME + " - " + file_pre);
       }
 
       cur_file_loader = new TextFileLoader(fpath, this);
@@ -285,7 +278,7 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
 
    public static void showError(String err_msg)
    {
-      JOptionPane.showMessageDialog(null, err_msg, Strings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, err_msg, UIStrings.ERRORMSG_TITLE, JOptionPane.ERROR_MESSAGE);
    }
 
    // === === ===
@@ -296,7 +289,7 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
       cur_file = file;
       this.action_panel.setWordCount(wc);
 
-      new Thread(new MarkdownProcessor(file, settings, this)).start();
+      new Thread(new MarkdownProcessor(file, this)).start();
    }
 
    @Override

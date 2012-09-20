@@ -18,6 +18,9 @@ import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
 
 class HTMLPanel extends JPanel
 {
+   final static Dimension MIN_SIZE = new Dimension(200, 200);
+   final static Dimension DEFAULT_SIZE = new Dimension(400, 400);
+
    private XHTMLPanel ep = null;
    //private JEditorPane ep = null;
    private JScrollPane sp = null;
@@ -25,7 +28,7 @@ class HTMLPanel extends JPanel
    /**
     * Default constructor
     */
-   public HTMLPanel(Settings s)
+   public HTMLPanel(Dimension size)
    {
       ep = new XHTMLPanel();
       ep.setDoubleBuffered(true);
@@ -36,8 +39,8 @@ class HTMLPanel extends JPanel
       sp = new FSScrollPane(ep);
       sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
       sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-      sp.setPreferredSize(s.window_size_default);
-      sp.setMinimumSize(new Dimension(40, 40));
+      sp.setPreferredSize(size);
+      sp.setMinimumSize(MIN_SIZE);
 
       this.setLayout(new BorderLayout());
       this.add(sp, BorderLayout.CENTER);

@@ -10,13 +10,9 @@ package abstrys.joculus;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -25,12 +21,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 final class ActionPanel extends JPanel
 {
    JLabel label_wc = null;
+   Joculus app;
 
    public ActionPanel(final Joculus app)
    {
-      //setBackground(Settings.action_panel_color);
-      Dimension d = app.settings.window_size_default;
-
+      this.app = app;
       setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
       // Setting an empty border on a button removes its decoration.
@@ -39,7 +34,7 @@ final class ActionPanel extends JPanel
       JButton b;
 
       b = new JButton(getToolbarIcon("refresh", this));
-      b.setToolTipText(Strings.UI_TOOLBAR_REFRESH_TIP);
+      b.setToolTipText(UIStrings.UI_TOOLBAR_REFRESH_TIP);
       b.setBorder(btn_border);
       b.addActionListener(new ActionListener()
       {
@@ -52,27 +47,27 @@ final class ActionPanel extends JPanel
       add(b);
 
       b = new JButton(getToolbarIcon("open", this));
-      b.setToolTipText(Strings.UI_TOOLBAR_OPEN_TIP);
+      b.setToolTipText(UIStrings.UI_TOOLBAR_OPEN_TIP);
       b.setBorder(btn_border);
       b.addActionListener(new ActionListener()
       {
          @Override
          public void actionPerformed(ActionEvent ae)
          {
-            actionOpenFile(app);
+            actionOpenFile();
          }
       });
       add(b);
 
       b = new JButton(getToolbarIcon("edit", this));
-      b.setToolTipText(Strings.UI_TOOLBAR_EDIT_TIP);
+      b.setToolTipText(UIStrings.UI_TOOLBAR_EDIT_TIP);
       b.setBorder(btn_border);
       b.addActionListener(new ActionListener()
       {
          @Override
          public void actionPerformed(ActionEvent ae)
          {
-            actionEditFile(app);
+            actionEditFile();
          }
       });
       // TODO: open the configured editor -or- the editor that's specified by the EDITOR environment variable.
@@ -83,32 +78,34 @@ final class ActionPanel extends JPanel
       label_wc = new JLabel();
       label_wc.setBorder(new EmptyBorder(4, 6, 4, 6));
       add(label_wc);
-      label_wc.setVisible(app.settings.display_word_count);
+
+      boolean display_wc = true;
+      label_wc.setVisible(Joculus.settings.display_word_count);
 
       add(Box.createHorizontalGlue());
 
       b = new JButton(getToolbarIcon("style", this));
-      b.setToolTipText(Strings.UI_TOOLBAR_STYLE_TIP);
+      b.setToolTipText(UIStrings.UI_TOOLBAR_STYLE_TIP);
       b.setBorder(btn_border);
       // TODO: pop up a menu with the currently configured stylesheets, and the option to manage stylesheets.
       add(b);
 
       b = new JButton(getToolbarIcon("settings", this));
-      b.setToolTipText(Strings.UI_TOOLBAR_SETTINGS_TIP);
+      b.setToolTipText(UIStrings.UI_TOOLBAR_SETTINGS_TIP);
       b.setBorder(btn_border);
       b.addActionListener(new ActionListener()
       {
          @Override
          public void actionPerformed(ActionEvent ae)
          {
-            SettingsDlg d = new SettingsDlg(app.settings);
+            SettingsDlg d = new SettingsDlg();
             app.refreshDisplay();
          }
       });
       add(b);
 
       b = new JButton(getToolbarIcon("about", this));
-      b.setToolTipText(Strings.UI_TOOLBAR_ABOUT_TIP);
+      b.setToolTipText(UIStrings.UI_TOOLBAR_ABOUT_TIP);
       b.setBorder(btn_border);
       b.addActionListener(new ActionListener()
       {
@@ -126,25 +123,25 @@ final class ActionPanel extends JPanel
       label_wc.setText(String.valueOf(wc) + " words");
    }
 
-   public void actionEditFile(Joculus app)
+   public void actionEditFile()
    {
       // use the environment?
-      if (!app.settings.editor_use_env)
+      if (!Joculus.settings.editor_use_env)
       {
          // use the user-specified editor (if it was specified).
-         File f = new File(app.settings.editor_path);
+         File f = new File(Joculus.settings.editor_path);
          if (!f.exists() || !f.canExecute())
          {
-            app.showError(Strings.ERROR_NO_TEXT_EDITOR);
+            Joculus.showError(UIStrings.ERROR_NO_TEXT_EDITOR);
             return;
          }
          else
          {
-            if (app.os_type == Joculus.OSType.OS_MacOSX)
+            if (Joculus.os_type == Joculus.OSType.OS_MacOSX)
             {
                String[] cmdarray = new String[]
                {
-                  "/usr/bin/open", "-a", app.settings.editor_path, app.cur_file.getAbsolutePath()
+                  "/usr/bin/open", "-a", Joculus.settings.editor_path, app.cur_file.getAbsolutePath()
                };
                try
                {
@@ -152,7 +149,7 @@ final class ActionPanel extends JPanel
                }
                catch (IOException ex)
                {
-                  app.showError(ex.getMessage());
+                  Joculus.showError(ex.getMessage());
                }
             }
          }
@@ -166,19 +163,19 @@ final class ActionPanel extends JPanel
          }
          catch (IOException exc)
          {
-            app.showError(exc.getMessage());
+            Joculus.showError(exc.getMessage());
          }
       }
    }
 
-   public void actionOpenFile(Joculus app)
+   public void actionOpenFile()
    {
       JFileChooser fc = new JFileChooser();
       fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-      fc.setDialogTitle(Strings.UI_OPEN_MDFILE_LABEL);
+      fc.setDialogTitle(UIStrings.UI_OPEN_MDFILE_LABEL);
       fc.addChoosableFileFilter(new FileNameExtensionFilter(
               "Markdown files (.md, .mmd, .markdown, .txt, .text)", "md", "mmd", "markdown", "txt", "text"));
-      int returnVal = fc.showOpenDialog(app.app_frame);
+      int returnVal = fc.showOpenDialog(Joculus.frame);
 
       if (returnVal == JFileChooser.APPROVE_OPTION)
       {

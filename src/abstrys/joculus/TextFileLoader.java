@@ -127,7 +127,7 @@ public class TextFileLoader extends Thread
       // make sure the file is legit.
       if(!fl_file.exists())
       {
-         fl_handler.textFileFailed(Strings.ERROR_BAD_FILEPATH + fl_file.getPath());
+         fl_handler.textFileFailed(UIStrings.ERROR_BAD_FILEPATH + fl_file.getPath());
       }
 
       // read from the file.

@@ -21,13 +21,13 @@ public class Utility
       String home = System.getProperty("user.home");
       if (home == null)
       {
-         Joculus.showError(Strings.ERROR_NO_HOME);
+         Joculus.showError(UIStrings.ERROR_NO_HOME);
          return null;
       }
 
       return home;
    }
-   
+
    public static FileFilter getExecutableFileFilter()
    {
       return (new FileFilter() {
@@ -40,7 +40,7 @@ public class Utility
          @Override
          public String getDescription()
          {
-            return Strings.EXECUTABLE_FILES;
+            return UIStrings.EXECUTABLE_FILES;
          }
       });
    }
