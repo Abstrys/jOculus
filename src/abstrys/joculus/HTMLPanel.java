@@ -9,20 +9,23 @@ package abstrys.joculus;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import org.xhtmlrenderer.simple.FSScrollPane;
 import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xhtmlrenderer.simple.extend.XhtmlNamespaceHandler;
+import org.xhtmlrenderer.swing.Java2DTextRenderer;
 
 class HTMLPanel extends JPanel
 {
    final static Dimension MIN_SIZE = new Dimension(200, 200);
    final static Dimension DEFAULT_SIZE = new Dimension(400, 400);
 
-   private XHTMLPanel ep = null;
-   //private JEditorPane ep = null;
+   private XHTMLPanel xhtml_panel = null;
+   //private JEditorPane xhtml_panel = null;
    private JScrollPane sp = null;
 
    /**
@@ -30,13 +33,14 @@ class HTMLPanel extends JPanel
     */
    public HTMLPanel(Dimension size)
    {
-      ep = new XHTMLPanel();
-      ep.setDoubleBuffered(true);
-//      ep.setEditable(false);
-//      ep.setContentType("text/html");
-      ep.setBorder(new EmptyBorder(10,10,10,10));
+      xhtml_panel = new XHTMLPanel();
+      xhtml_panel.setDoubleBuffered(true);
+//      Java2DTextRenderer tr = (Java2DTextRenderer) xhtml_panel.getSharedContext().getTextRenderer();
+//      xhtml_panel.setEditable(false);
+//      xhtml_panel.setContentType("text/html");
+      xhtml_panel.setBorder(new EmptyBorder(10,10,10,10));
 
-      sp = new FSScrollPane(ep);
+      sp = new FSScrollPane(xhtml_panel);
       sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
       sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       sp.setPreferredSize(size);
@@ -48,9 +52,13 @@ class HTMLPanel extends JPanel
 
    public void setHTML(String html, String base_url)
    {
+      Graphics2D graphics = (Graphics2D) xhtml_panel.getGraphics();
+//      graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+      graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, Joculus.settings.getFontSmoothingValue());
+
       try
       {
-         ep.setDocumentFromString(html, base_url, new XhtmlNamespaceHandler());
+         xhtml_panel.setDocumentFromString(html, base_url, new XhtmlNamespaceHandler());
       }
       catch(org.xhtmlrenderer.util.XRRuntimeException ex)
       {

@@ -21,11 +21,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 final class ActionPanel extends JPanel
 {
    JLabel label_wc = null;
-   Joculus app;
+   Joculus app_instance = null;
+   SettingsDlg settings_dlg = null;
 
    public ActionPanel(final Joculus app)
    {
-      this.app = app;
+      this.app_instance = app;
       setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
       // Setting an empty border on a button removes its decoration.
@@ -98,8 +99,14 @@ final class ActionPanel extends JPanel
          @Override
          public void actionPerformed(ActionEvent ae)
          {
-            SettingsDlg d = new SettingsDlg();
-            app.refreshDisplay();
+            if(settings_dlg == null)
+            {
+                settings_dlg = new SettingsDlg(app);
+            }
+            else
+            {
+                settings_dlg.setVisible(true);
+            }
          }
       });
       add(b);
@@ -141,7 +148,7 @@ final class ActionPanel extends JPanel
             {
                String[] cmdarray = new String[]
                {
-                  "/usr/bin/open", "-a", Joculus.settings.editor_path, app.cur_file.getAbsolutePath()
+                  "/usr/bin/open", "-a", Joculus.settings.editor_path, app_instance.cur_file.getAbsolutePath()
                };
                try
                {
@@ -159,7 +166,7 @@ final class ActionPanel extends JPanel
          // try using the system-defined editor to edit the file.
          try
          {
-            Desktop.getDesktop().edit(app.cur_file);
+            Desktop.getDesktop().edit(app_instance.cur_file);
          }
          catch (IOException exc)
          {
@@ -182,7 +189,7 @@ final class ActionPanel extends JPanel
          File file = fc.getSelectedFile();
          if (file.exists() && file.isFile())
          {
-            app.setFile(file.getAbsolutePath());
+            app_instance.setFile(file.getAbsolutePath());
          }
       }
    }

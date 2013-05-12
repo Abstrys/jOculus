@@ -35,17 +35,22 @@ final class UIStrings
 
    protected static final String SETTINGS_DIALOG_MARKDOWN_PROCESSOR_TITLE = "Markdown Processor";
    protected static final String SETTINGS_DIALOG_MARKDOWN_PROCESSOR_BROWSE_TOOLTIP = "Browse the file system for a Markdown processor";
-   protected static final String SETTINGS_DIALOG_MARKDOWN_PROCESSOR_ADD = "Add this Markdown processor.";
-   protected static final String SETTINGS_DIALOG_MARKDOWN_PROCESSOR_REMOVE = "Delete this Markdown processor.";
+   protected static final String SETTINGS_DIALOG_MARKDOWN_PROCESSOR_ADD = "Add a new Markdown processor.";
+   protected static final String SETTINGS_DIALOG_MARKDOWN_PROCESSOR_REMOVE = "Remove this Markdown processor.";
    protected static final String[] SETTINGS_DIALOG_DEFAULT_NEW_PROC_VALUES = { "New processor", "path/to/processor", "--options"};
 
    protected static final String SETTINGS_DIALOG_CSS_TITLE = "Style Sheets";
    protected static final String SETTINGS_DIALOG_CSS_BROWSE_TOOLTIP = "Browse the file system for a CSS file";
+   protected static final String SETTINGS_DIALOG_CSS_FILE_ADD = "Add a new CSS file.";
+   protected static final String SETTINGS_DIALOG_CSS_FILE_REMOVE = "Remove this CSS file.";
+   protected static final String[] SETTINGS_DIALOG_DEFAULT_NEW_CSS_VALUES = { "New CSS file", "path/to/css"};
 
    protected static final String UI_CANCEL_LABEL = "Cancel";
    protected static final String UI_PROC_NAME_LABEL = "Processor name";
    protected static final String UI_PROC_OPTIONS_LABEL = "Processor options";
    protected static final String UI_PROC_PATH_LABEL = "Processor path";
+   protected static final String UI_CSS_NAME_LABEL = "CSS file name";
+   protected static final String UI_CSS_PATH_LABEL = "CSS file path";
    protected static final String UI_RESET_LABEL = "Reset";
    protected static final String UI_SAVE_LABEL = "Save";
    protected static final String UI_USEDEFAULTS_LABEL = "Use Defaults";
