@@ -1,3 +1,14 @@
 Manifest-Version: 1.0
-X-COMMENT: Main-Class will be added automatically by build
+Ant-Version: Apache Ant 1.8.2
+Created-By: 1.6.0_45-b06-451-11M4406 (Apple Inc.)
+Built-By: eron
+Main-Class: abstrys/joculus/Joculus
+
+Name: common
+Specification-Title: Example
+Specification-Version: ${version}
+Specification-Vendor: Example Organization
+Implementation-Title: common
+Implementation-Version: ${version} May 12 2013
+Implementation-Vendor: Eron Hennessey / Abstrys
 
