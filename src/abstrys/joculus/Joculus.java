@@ -224,6 +224,9 @@ public class Joculus implements TextFileLoader.TextHandler, MarkdownProcessor.Xh
    {
       Joculus app_instance = new Joculus();
 
+      String cp = System.getProperty("java.class.path");
+      System.out.println("Classpath: " + cp);
+
       if (app_instance.init(args))
       {
       //   app_instance.run();
