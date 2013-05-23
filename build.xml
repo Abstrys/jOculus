@@ -5,8 +5,9 @@
     <property name="src" location="src/abstrys/joculus"/>
     <property name="build" location="build"/>
     <property name="dist"  location="dist"/>
+    <property name="pkg"  location="pkg"/>
 
-    <target name="init">
+    <target name="init" depends="clean">
         <!-- Create the time stamp -->
         <tstamp/>
         <!-- Create the build directory structure used by compile -->
@@ -32,7 +33,6 @@
         </javac>
 
         <!-- Copy the resource files -->
-        <mkdir dir="${dist}/abstrys/joculus/res"/>
         <copy todir="${build}/abstrys/joculus/res">
             <fileset dir="${src}/res"/>
         </copy>
@@ -44,7 +44,7 @@
         <mkdir dir="${dist}/lib"/>
 
         <!-- Copy the necessary libs into the dist directory. -->
-        <copy todir="${dist}/lib">
+        <copy todir="${dist}/lib" preservelastmodified="true">
             <fileset dir="lib" includes="*.jar"/>
         </copy>
 
@@ -60,7 +60,7 @@
         </pathconvert>
 
         <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-        <jar jarfile="${dist}/Joculus-${DSTAMP}.jar" basedir="${build}">
+        <jar jarfile="${dist}/jOculus.jar" basedir="${build}">
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>
                 <attribute name="Main-Class" value="abstrys.joculus.Joculus"/>
@@ -77,10 +77,57 @@
         </jar>
     </target>
 
+    <target name="copy_license" depends="dist"
+      description="copy the license files into the dist directory">
+        <!-- Copy the License and Readme files. -->
+        <copy file="LICENSE.txt" todir="${dist}"/>
+        <copy file="README.md" tofile="${dist}/README.txt"/>
+    </target>
+
+    <target name="pkg_nix" depends="copy_license"
+      description="package jOculus in a .tar.bz2 file for distribution on Unix-like systems.">
+        <!-- Copy the *nix shell files. -->
+        <copy file="shell/install.sh" todir="${dist}"/>
+        <copy file="shell/joculus" todir="${dist}"/>
+        <!-- tar it up! -->
+        <tar destfile="${pkg}/jOculus.tar" longfile="gnu">
+            <!-- put the right permissions on the executable files -->
+            <tarfileset dir="${dist}" filemode="755" prefix="jOculus-${DSTAMP}">
+               <include name="install.sh"/>
+               <include name="joculus"/>
+            </tarfileset>
+            <!-- and just include the rest... -->
+            <tarfileset dir="${dist}" prefix="jOculus-${DSTAMP}">
+               <include name="**"/>
+               <exclude name="install.sh"/>
+               <exclude name="joculus"/>
+            </tarfileset>
+        </tar>
+        <gzip destfile="${pkg}/jOculus-${DSTAMP}.tar.gz" src="${pkg}/jOculus.tar"/>
+        <bzip2 destfile="${pkg}/jOculus-${DSTAMP}.tar.bz2" src="${pkg}/jOculus.tar"/>
+    </target>
+
+    <target name="pkg_win" depends="copy_license"
+      description="package jOculus in a .zip file for distribution on Microsoft Windows">
+        <!-- Make the zipfile, containing everything within the `dist` directory -->
+        <zip destfile="${pkg}/jOculus-${DSTAMP}.zip" update="true">
+            <zipfileset dir="${dist}" prefix="jOculus-${DSTAMP}">
+               <include name="**"/>
+            </zipfileset>
+        </zip>
+    </target>
+
+    <target name="pkg_all" depends="pkg_win,pkg_nix"
+      description="package jOculus for all supported platforms"/>
+
     <target name="clean" description="clean up" >
         <!-- Delete the ${build} and ${dist} directory trees -->
         <delete dir="${build}"/>
         <delete dir="${dist}"/>
+    </target>
+
+    <target name="spotless" depends="clean" description="clean up *everything*, including the pkg directory">
+        <delete dir="${pkg}"/>
     </target>
 </project>
 
